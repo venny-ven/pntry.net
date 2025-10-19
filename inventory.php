@@ -1,20 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Cellar</title>
-</head>
+<?php include "header.php"; ?>
 
-<body style="background: MistyRose;">
-    <h1 style="text-align: center;">Inventory</h1>
-    <a href="home.html">Home</a> |
-    <a href="inventory.html">Manage inventory</a> |
-    <a href="add-ingredient.html">Add an ingredient to the database</a>
     <p>Add and remove items from the following list of available options to match what you have in the kitchen.</p>
 
     <div id="ingredients" style="display: flex;"></div>
 
-    <!-- Programmatically generate ingredient list -->
+    <!-- Generate ingredient list -->
     <script>
         const ingredientNames = ["Chicken", "Beef", "Egg", "Rice", "Ramen", "Elbow Noodles", "Frozen Potato", "Oat", "Tomato", "Cucumber", "Mushroom", "Carrot", "Onion", "Garlic", "Scallion", "Milk"];
         const quantities = Array(ingredientNames.length).fill(0); // Starting quantities for each ingredient, fill array with zeros
