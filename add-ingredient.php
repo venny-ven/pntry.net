@@ -1,21 +1,18 @@
-<?php include "header.php"; ?>
+<?php include 'header.php'; ?>
 
-    <p>Add an ingredient to the database so you can track its amount in the future. </p>
+<p>Add an ingredient to the database so you can track its amount in the future.</p>
 
-    <form action="submit-ingredient.php" method="POST">
-        <label>Ingredient Name: <input type="text" name="name"></label>
-        <select name="type" required>
-            <option value="">-- Select Type --</option>
-            <option value="protein">Protein</option>
-            <option value="starch">Starch</option>
-            <option value="fruit">Fruit</option>
-            <option value="vegetable">Vegetable</option>
-            <option value="dairy">Dairy</option>
-            <option value="seasoning">Seasoning</option>
-        </select>
-        <br><br>
-        <input type="submit" value="Submit Ingredient">
-    </form>
+<?php include 'ingredient-form.php' ?>
+
+<?php
+// If vieweing after a form was submitted
+if (filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING) === 'POST') { // === is strict equality (value AND type)
+    // Prevent HTML tag injection
+    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+    $category = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_STRING);
+    echo "<p>You have added a new ingredient <b>$name</b> under a category <b>$category</b></p>";
+}
+?>
 
 </body>
 </html>
