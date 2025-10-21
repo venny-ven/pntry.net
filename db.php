@@ -4,7 +4,7 @@ $host = 'localhost'; // Target IP - database that's running locally
 $user = 'root'; // Root user
 $pass = '';  // Root user password is none currently - for local development only!
 $charset = 'utf8mb4'; // Modern charset standard - UTF8 + patch, fast general sorting / comparison, case insensitive
-$dbname = 'cellar_v2'; // Changes to internal structure should advance this version
+$dbname = 'cellar_v4'; // Changes to internal structure should advance this version
 $attributes = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // DB fails will raise exceptions, not warnings, not ignored
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // Items fetched as key->value, not key->value AND keyID->valueID - cleaner
@@ -44,11 +44,12 @@ try {
 	CREATE TABLE IF NOT EXISTS ingredient
 	(
 	    id INT PRIMARY KEY AUTO_INCREMENT,
-	    name VARCHAR(30) NOT NULL,
+	    name VARCHAR(30) UNIQUE NOT NULL,
 	    category VARCHAR(20) CHECK
 	    (
 		category IN ('protein', 'starch', 'vegetable', 'fruit', 'dairy', 'seasoning')
-	    )
+	    ),
+	    quantity INT NOT NULL
 	);
     ");
 } catch (PDOException $ex) {

@@ -13,20 +13,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { // === is strict equality (value AN
     $name = htmlspecialchars($_POST['name'] ?? '');
     $category = htmlspecialchars($_POST['category'] ?? '');
     
-
-    
-    try {
+    try
+    {
 	$stmt = $pdo->prepare
 		("
 		    INSERT INTO `ingredient` (`name`, `category`)
 		    VALUES (:name, :category)
 		");
 	$stmt->execute(['name' => $name, 'category' => $category]);
-    } catch (Exception $ex) {
-	die("Failed to add the ingredient to the database: " . $ex->getMessage());
-    }
-    
-    echo "<p>You have added a new ingredient <b>$name</b> under a category <b>$category</b></p>";
+	echo "<p>You have added a new ingredient <b>$name</b> under a category <b>$category</b></p>";
+    } catch (PDOException $ex)
+    {
+	// Check if the error code corresponds to a UNIQUE constraint violation
+	if ($ex->getCode() == 23000) {
+	    echo "<p>Error: Ingredient $name already exists!</p>";
+	} else {
+	    die("Failed to add the ingredient to the database: " . $ex->getMessage());
+	}
+    }    
 }
-
 include 'footer.php';

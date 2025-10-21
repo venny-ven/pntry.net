@@ -1,17 +1,30 @@
-<?php include "header.php"; ?>
+<?php
+
+include "header.php"; 
+$pdo = require_once 'db.php';
+
+?>
 
 <p>Add and remove items from the following list of available options to match what you have in the kitchen.</p>
-
-<div id="ingredients" style="display: flex;"></div>
+<div id="ingredientPanel" style="display: flex;"></div>
 
 <!-- Generate ingredient list -->
-<script>
-    const ingredientNames = ["Chicken", "Beef", "Egg", "Rice", "Ramen", "Elbow Noodles", "Frozen Potato", "Oat", "Tomato", "Cucumber", "Mushroom", "Carrot", "Onion", "Garlic", "Scallion", "Milk"];
-    const quantities = Array(ingredientNames.length).fill(0); // Starting quantities for each ingredient, fill array with zeros
+<?php
 
+try
+{
+    $stmt = $pdo->query('SELECT name, quantity FROM ingredient;');
+    $ingredientTable = $stmt->fetchAll(PDO::FETCH_ASSOC); // Array of associative arrays - ['name' => 'Sugar', 'quantity' => '3'], ['name' =>...
+} catch (PDOException $ex) {
+    die("Could not retrieve ingredients from the table: " . $ex->getMessage());
+}
+?>
+
+<script>
+    let ingredients = <?php echo json_encode($ingredientTable); ?>;
     // Define column height by dividing the list length into equal parts. Number of columns is defined as 3 for now
-    let columnCount = 3;
-    let columnHeight = Math.ceil(ingredientNames.length / columnCount);
+    const columnCount = 3;
+    const columnHeight = Math.ceil(ingredients.length / columnCount);
 
     // Generate HTML for column containers
     const columns = Array(columnCount);
@@ -28,11 +41,11 @@
 
     // Generate the HTML for each ingredient
     let currentColumn = 0;
-    for (let i = 0; i < ingredientNames.length; i++) {
+    for (let i = 0; i < ingredients.length; i++) {
 
         // Heading
         const heading = document.createElement("h3");
-        updateHeading(heading, ingredientNames[i], quantities[i]);
+        updateHeading(heading, ingredients[i].name, ingredients[i].quantity);
 
         // Containers for buttons
         const outerDiv = document.createElement("div");
@@ -45,8 +58,8 @@
         addButton.textContent = "Add";
         addButton.style.background = "MediumSeaGreen";
         addButton.addEventListener("click", () => {
-            quantities[i]++;
-            updateHeading(heading, ingredientNames[i], quantities[i])
+            ingredients[i].quantity++;
+            updateHeading(heading, ingredients[i].name, ingredients[i].quantity)
         })
 
         // "Remove" button
@@ -54,8 +67,8 @@
         removeButton.textContent = "Remove";
         removeButton.style.background = "Salmon";
         removeButton.addEventListener("click", () => {
-            quantities[i]--;
-            updateHeading(heading, ingredientNames[i], quantities[i])
+            ingredients[i].quantity--;
+            updateHeading(heading, ingredients[i].name, ingredients[i].quantity)
         })
 
         // Horizontal line
@@ -72,15 +85,16 @@
         columns[currentColumn].appendChild(horizontal);
 
         // When the column height is reached, move to the next
-        if (i % columnHeight == columnHeight-1) {
+        if (i % columnHeight === columnHeight-1) {
             currentColumn++;
         }
     }
 
     // Attach all columns to the HTML document
-    container = document.getElementById("ingredients")
+    container = document.getElementById("ingredientPanel")
     for (let i = 0; i < columnCount; i++) {
         container.appendChild(columns[i]);
+	console.log('child appended');
     }
 
 </script>
