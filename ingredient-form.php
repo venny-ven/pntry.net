@@ -2,12 +2,12 @@
     <label>Ingredient Name: <input type="text" name="name"></label>
     <select name="category" required>
         <option value="">-- Select Category --</option>
-        <option value="Protein">Protein</option>
-        <option value="Starch">Starch</option>
-        <option value="Fruit">Fruit</option>
-        <option value="Vegetable">Vegetable</option>
-        <option value="Dairy">Dairy</option>
-        <option value="Seasoning">Seasoning</option>
+        <option value="protein">Protein</option>
+        <option value="starch">Starch</option>
+        <option value="vegetable">Vegetable</option>
+        <option value="fruit">Fruit</option>
+        <option value="dairy">Dairy</option>
+        <option value="seasoning">Seasoning</option>
     </select>
     <br><br>
     <input type="submit" value="Add Ingredient">
