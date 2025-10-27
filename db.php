@@ -1,10 +1,10 @@
 <?php
 
 $host = 'localhost'; // Target IP - database that's running locally
-$user = 'root'; // Root user
-$pass = '';  // Root user password is none currently - for local development only!
+$user = 'www-data'; // Username associated with NginX and Apache process
+$pass = '';  // No password since connecting via unix_socket
 $charset = 'utf8mb4'; // Modern charset standard - UTF8 + patch, fast general sorting / comparison, case insensitive
-$dbname = 'cellar_v4'; // Changes to internal structure should advance this version
+$dbname = 'pntry_v1'; // Changes to internal structure should advance this version
 $attributes = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // DB fails will raise exceptions, not warnings, not ignored
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // Items fetched as key->value, not key->value AND keyID->valueID - cleaner
