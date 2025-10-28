@@ -79,7 +79,9 @@ try
         removeButton.textContent = "Remove";
         removeButton.style.background = "Salmon";
         removeButton.addEventListener("click", () => {
-            ingredients[i].quantity--;
+            if (ingredients[i].quantity > 0) {
+		ingredients[i].quantity--;
+	    }
             updateHeading(heading, ingredients[i].name, ingredients[i].quantity)
         })
 
