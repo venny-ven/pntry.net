@@ -4,7 +4,7 @@ $host = 'localhost'; // Target IP - database that's running locally
 $user = 'www-data'; // Username associated with NginX and Apache process
 $pass = '';  // No password since connecting via unix_socket
 $charset = 'utf8mb4'; // Modern charset standard - UTF8 + patch, fast general sorting / comparison, case insensitive
-$dbname = 'pntry_v1'; // Changes to internal structure should advance this version
+$dbname = 'pntry_v2'; // Changes to internal structure should advance this version
 $attributes = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // DB fails will raise exceptions, not warnings, not ignored
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // Items fetched as key->value, not key->value AND keyID->valueID - cleaner
@@ -49,7 +49,7 @@ try {
 	    (
 		category IN ('protein', 'starch', 'vegetable', 'fruit', 'dairy', 'seasoning')
 	    ),
-	    quantity INT NOT NULL
+	    quantity INT NOT NULL DEFAULT 0
 	);
     ");
 } catch (PDOException $ex) {
