@@ -11,6 +11,22 @@ $pdo = require_once 'db.php';
 <button class="save_button" type="button">Save</button> <!-- type='button' is default, 'submit' would do a form request -->
 <span class="save_status" style="margin-left: 8px;"></span>
 
+<!-- Table version of the ingredient list -->
+<div style="display: flex; gap: 8px; align-items: flex-start; padding-top: 8px; padding-bottom: 8px;">
+<table> <tbody id="table0">
+	<tr> <th colspan="3"> <p>Protein & Dairy</p> </th> </tr>
+</tbody> </table>
+<table> <tbody id="table1">
+	<tr> <th colspan="3"> <p>Starch</p> </th> </tr>
+ </tbody> </table>
+<table> <tbody id="table2">
+	<tr> <th colspan="3"> <p>Fruit & Vegetables</p> </th> </tr>
+</tbody> </table>
+<table> <tbody id="table3">
+	<tr> <th colspan="3"> <p>Seasonings</p> </th> </tr>
+</tbody> </table>
+</div>
+
 <!-- List of ingredients populated by JS -->
 <div id="ingredientPanel" style="display: flex;"></div>
 
@@ -22,92 +38,86 @@ $pdo = require_once 'db.php';
 <?php
 try
 {
-    $stmt = $pdo->query('SELECT id, name, quantity FROM ingredient;');
-    $ingredientTable = $stmt->fetchAll(PDO::FETCH_ASSOC); // Array of associative arrays - myArr[index].name = 'Sugar', myArr[index].quantity = 1
+    // Prepare a statement for each table (category) of ingredient
+    $statements = array();
+    $statements[0] = $pdo->query("SELECT id, name, quantity FROM ingredient WHERE category IN ('protein', 'dairy');");
+    $statements[1] = $pdo->query("SELECT id, name, quantity FROM ingredient WHERE category IN ('starch');");
+    $statements[2] = $pdo->query("SELECT id, name, quantity FROM ingredient WHERE category IN ('fruit', 'vegetable');");
+    $statements[3] = $pdo->query("SELECT id, name, quantity FROM ingredient WHERE category IN ('seasoning');");
+    
+    // Load ingredients to separate tables, each table is an array of items, tables are aggregated into super array
+    $ingredientTables = array();
+    for ($i = 0; $i < count($statements); $i++) {
+	$ingredientTables[$i] = $statements[$i]->fetchAll(PDO::FETCH_ASSOC);
+    }
 } catch (PDOException $ex) {
     die("Could not retrieve ingredients from the table: " . $ex->getMessage());
 }
 ?>
 
-<!-- Generate ingredient list -->
+<!-- Populate tables and create button behavior -->
 <script>
-    // Import array from php to js, encode to json to sanitize
-    let ingredients = <?php echo json_encode($ingredientTable); ?>;
     
-    // Define column height by dividing the list length into equal parts. Number of columns is defined as 3 for now
-    const columnCount = 3;
-    const columnHeight = Math.ceil(ingredients.length / columnCount);
-
-    // Generate HTML for column containers
-    const columns = Array(columnCount);
-    for (let i = 0; i < columnCount; i++) {
-        columns[i] = document.createElement("div");
-        columns[i].style.flex = "1";
-    }
+    // Import array from php to js, encode to json to sanitize
+    const ingredients = <?php echo json_encode($ingredientTables); ?>;
 
     // This function runs every time a button is clicked and also once for each ingredient at initialization
-    function updateHeading(heading, ingredientName, quantity)
+    function updateLabel(label, ingredientName, quantity)
     {
-        heading.innerHTML = `${ingredientName} x ${quantity}`;
+        label.innerHTML = `<b>${ingredientName}</b> x ${quantity}`;
     }
-
-    // Generate the HTML for each ingredient
-    let currentColumn = 0;
+    
+    // Generate table items
     for (let i = 0; i < ingredients.length; i++) {
-
-        // Heading
-        const heading = document.createElement("h3");
-        updateHeading(heading, ingredients[i].name, ingredients[i].quantity);
-
-        // Containers for buttons
-        const outerDiv = document.createElement("div");
-            outerDiv.style.display = "flex";
-        const innerDiv1 = document.createElement("div");
-        const innerDiv2 = document.createElement("div");
-
-        // "Add" button
-        const addButton = document.createElement("button");
-        addButton.textContent = "Add";
-        addButton.style.background = "MediumSeaGreen";
-        addButton.addEventListener("click", () => {
-            ingredients[i].quantity++;
-            updateHeading(heading, ingredients[i].name, ingredients[i].quantity)
-        })
-
-        // "Remove" button
-        const removeButton = document.createElement("button");
-        removeButton.textContent = "Remove";
-        removeButton.style.background = "Salmon";
-        removeButton.addEventListener("click", () => {
-            if (ingredients[i].quantity > 0) {
-		ingredients[i].quantity--;
-	    }
-            updateHeading(heading, ingredients[i].name, ingredients[i].quantity)
-        })
-
-        // Horizontal line
-        const horizontal = document.createElement("hr");
-
-        // Attach everything to the column
-        innerDiv1.appendChild(addButton);
-        innerDiv2.appendChild(removeButton);
-        outerDiv.appendChild(innerDiv1);
-        outerDiv.appendChild(innerDiv2);
-
-        columns[currentColumn].appendChild(heading);
-        columns[currentColumn].appendChild(outerDiv);
-        columns[currentColumn].appendChild(horizontal);
-
-        // When the column height is reached, move to the next
-        if (i % columnHeight === columnHeight-1) {
-            currentColumn++;
-        }
-    }
-
-    // Attach all columns to the document
-    container = document.getElementById("ingredientPanel")
-    for (let i = 0; i < columnCount; i++) {
-        container.appendChild(columns[i]);
+	
+	// Locate the right table
+	table = document.getElementById(`table${i}`);
+	
+	// Create entries in the table
+	for (let j = 0; j < ingredients[i].length; j++) {
+	    
+	    // Table containers
+	    const row = document.createElement("tr");
+	    const removeCell = document.createElement("td");
+	    const addCell = document.createElement("td");
+	    const labelCell = document.createElement("td");
+	    removeCell.classList.add("button_cell");
+	    addCell.classList.add("button_cell");
+	    labelCell.classList.add("label_cell");
+	    
+	    // Label
+	    const label = document.createElement("p");
+	    updateLabel(label, ingredients[i][j].name, ingredients[i][j].quantity);
+	    
+	    // "Add" button
+	    const addButton = document.createElement("button");
+	    addButton.classList.add("add_button");
+	    addButton.textContent = "+";
+	    addButton.addEventListener("click", () => {
+		ingredients[i][j].quantity++;
+		updateLabel(label, ingredients[i][j].name, ingredients[i][j].quantity);
+	    });
+	    
+	    // "Remove" button
+	    const removeButton = document.createElement("button");
+	    removeButton.classList.add("remove_button");
+	    removeButton.textContent = "−";
+	    removeButton.addEventListener("click", () => {
+		if (ingredients[i][j].quantity > 0) {
+		    ingredients[i][j].quantity--;
+		}
+		updateLabel(label, ingredients[i][j].name, ingredients[i][j].quantity);
+	    });
+	    
+	    // Attach everything
+	    removeCell.appendChild(removeButton);
+	    addCell.appendChild(addButton);
+	    labelCell.appendChild(label);
+	    row.appendChild(removeCell);
+	    row.appendChild(addCell);
+	    row.appendChild(labelCell);
+	    table.appendChild(row);
+	}
     }
 
     // Assign behavior to save buttons
