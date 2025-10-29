@@ -1,0 +1,106 @@
+table, tr, td {
+    border: 1px solid;
+    border-color: #3d444d;
+    border-collapse: collapse;
+    border-spacing: 0;
+    overflow: hidden;
+    width: 25%;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.button_cell {
+    padding: 0px;
+    width: 0%;
+}
+
+.save_button {
+    background-color: #29903b;
+    color: #ffffff;
+    border: .0625rem solid;
+    border-color: #ffffff26;
+    gap: .5rem;
+    height: 2rem;
+    justify-content: space-between;
+    min-width: max-content;
+    padding: 0 .75rem;
+    text-align: center;
+}
+
+.remove_button {
+    /*background: #b62324;*/
+    background: #0d1117;
+}
+
+.remove_button:hover {
+    background: #e42122;
+}
+
+.add_button {
+    /*background: #29903b;*/
+    background: #0d1117;
+}
+
+.add_button:hover {
+    background: #2e9a40;
+}
+
+.button_cell {
+  /*display: flex;*/
+  align-items: stretch; /* Stretches items along the cross-axis (vertically by default) */
+  justify-content: space-between; /* Example: distributes items along the main-axis */
+}
+
+table td button {
+    display: inline-block;
+    padding-top: .7em;
+    padding-bottom: .7em;
+    padding-right: 8px;
+    padding-left: 8px;
+    
+    color: #ffffff;
+    border: .0625rem solid;
+    border-color: #ffffff26;
+    gap: .5rem;
+    justify-content: space-between;
+    min-width: max-content;
+    text-align: center;
+}
+
+.label_cell {
+    width: 100%;
+    margin: 0px;
+}
+
+.label_cell:hover {
+    background-color: #151b23;
+}
+
+table td p {
+    margin: 0px;
+}
+
+/*
+table td button {
+  height: 100%;
+  box-sizing: border-box;
+}*/
+
+body {
+    font-family: 'Space Mono', sans-serif;
+    background: #0d1117;
+    color: #9198a1;
+}
+
+p {
+    color: #9198a1;
+}
+
+b {
+    color: #f0f6fc;
+}
+
+a, a:visited {
+    color: #4493f8;
+}
+

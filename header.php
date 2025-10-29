@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8"> <!-- Use modern character set -->
     <title>pntry.net</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 </head>
-<body style="background:MistyRose;">
-    <h1 style="text-align:left;">pntry.net</h1>
+<body>
+    <h1><b>pntry</b>.net</h1>
     <a href="index.php">Home</a> |
     <a href="inventory.php">Manage inventory</a> |
     <a href="add-ingredient.php">Add an ingredient to the database</a>
