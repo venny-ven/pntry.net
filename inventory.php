@@ -13,16 +13,16 @@ $pdo = require_once 'db.php';
 
 <!-- Table version of the ingredient list -->
 <div style="display: flex; gap: 8px; align-items: flex-start; padding-top: 8px; padding-bottom: 8px;">
-<table> <tbody id="table0">
+<table> <tbody id="table0" data-categories="protein,dairy">
 	<tr> <th colspan="3"> <p>Protein & Dairy</p> </th> </tr>
 </tbody> </table>
-<table> <tbody id="table1">
+<table> <tbody id="table1" data-categories="starch">
 	<tr> <th colspan="3"> <p>Starch</p> </th> </tr>
  </tbody> </table>
-<table> <tbody id="table2">
+<table> <tbody id="table2" data-categories="fruit,vegetable">
 	<tr> <th colspan="3"> <p>Fruit & Vegetables</p> </th> </tr>
 </tbody> </table>
-<table> <tbody id="table3">
+<table> <tbody id="table3" data-categories="seasoning">
 	<tr> <th colspan="3"> <p>Seasonings</p> </th> </tr>
 </tbody> </table>
 </div>
@@ -34,32 +34,28 @@ $pdo = require_once 'db.php';
 <button class="save_button" type="button">Save</button>
 <span class="save_status" style="margin-left: 8px;"></span>
 
-<!-- Retrieve ingredient names and quantities from the database -->
+<!-- Retrieve ingredient names, quantities, etc from the database -->
 <?php
 try
 {
-    // Prepare a statement for each table (category) of ingredient
-    $statements = array();
-    $statements[0] = $pdo->query("SELECT id, name, quantity FROM ingredient WHERE category IN ('protein', 'dairy');");
-    $statements[1] = $pdo->query("SELECT id, name, quantity FROM ingredient WHERE category IN ('starch');");
-    $statements[2] = $pdo->query("SELECT id, name, quantity FROM ingredient WHERE category IN ('fruit', 'vegetable');");
-    $statements[3] = $pdo->query("SELECT id, name, quantity FROM ingredient WHERE category IN ('seasoning');");
-    
-    // Load ingredients to separate tables, each table is an array of items, tables are aggregated into super array
-    $ingredientTables = array();
-    for ($i = 0; $i < count($statements); $i++) {
-	$ingredientTables[$i] = $statements[$i]->fetchAll(PDO::FETCH_ASSOC);
-    }
+    // Load ingredients into an associative array from the database
+    $statement = $pdo->query("SELECT id, name, quantity, category FROM ingredient");
+    $ingredientList = $statement->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $ex) {
-    die("Could not retrieve ingredients from the table: " . $ex->getMessage());
+    die("Could not retrieve ingredients from the database: " . $ex->getMessage());
 }
 ?>
 
-<!-- Populate tables and create button behavior -->
+<!-- Populate HTML tables and create button behavior -->
 <script>
     
-    // Import array from php to js, encode to json to sanitize
-    const ingredients = <?php echo json_encode($ingredientTables); ?>;
+    // Import ingredients from php to js, encode to json to sanitize
+    const ingredients = <?php echo json_encode($ingredientList); ?>;
+    
+    // Copy quantities into another array
+    // When user adds / removes, I compare to these initial quantities
+    // To determine the color of the row - green or red or none
+    const initialQuantities = ingredients.map(ingr => ingr.quantity);
 
     // This function runs every time a button is clicked and also once for each ingredient at initialization
     function updateLabel(label, ingredientName, quantity)
@@ -68,45 +64,74 @@ try
     }
     
     // Generate table items
-    for (let i = 0; i < ingredients.length; i++) {
+    for (let i = 0; i < 4; i++) {
 	
-	// Locate the right table
-	table = document.getElementById(`table${i}`);
+	// Locate the correct table
+	const table = document.getElementById(`table${i}`);
+	
+	// Identify selected categories for that table
+	const tableCategories = table.dataset.categories.split(',')
 	
 	// Create entries in the table
-	for (let j = 0; j < ingredients[i].length; j++) {
+	for (let j = 0; j < ingredients.length; j++) {
 	    
-	    // Table containers
+	    // Table containers, like rows and cells
 	    const row = document.createElement("tr");
 	    const removeCell = document.createElement("td");
 	    const addCell = document.createElement("td");
 	    const labelCell = document.createElement("td");
-	    removeCell.classList.add("button_cell");
-	    addCell.classList.add("button_cell");
-	    labelCell.classList.add("label_cell");
+		// Add classes for css control
+		removeCell.classList.add("button_cell");
+		addCell.classList.add("button_cell");
+		labelCell.classList.add("label_cell");
 	    
-	    // Label
+	    // Label - text that says the name of the ingredient and quantity
 	    const label = document.createElement("p");
-	    updateLabel(label, ingredients[i][j].name, ingredients[i][j].quantity);
+	    updateLabel(label, ingredients[j].name, ingredients[j].quantity);
 	    
-	    // "Add" button
+	    // "+" button
 	    const addButton = document.createElement("button");
 	    addButton.classList.add("add_button");
 	    addButton.textContent = "+";
 	    addButton.addEventListener("click", () => {
-		ingredients[i][j].quantity++;
-		updateLabel(label, ingredients[i][j].name, ingredients[i][j].quantity);
+		ingredients[j].quantity++;
+		updateLabel(label, ingredients[j].name, ingredients[j].quantity);
+		// Color the row
+		if (initialQuantities[j] < ingredients[j].quantity) {
+		    row.classList.remove('red_row');
+		    row.classList.add('green_row');
+		}
+		else if (initialQuantities[j] > ingredients[j].quantity) {
+		    row.classList.remove('green_row');
+		    row.classList.add('red_row');
+		}
+		else {
+		    row.classList.remove('green_row', 'red_row');
+		}
 	    });
 	    
-	    // "Remove" button
+	    // "-" button
 	    const removeButton = document.createElement("button");
 	    removeButton.classList.add("remove_button");
 	    removeButton.textContent = "−";
 	    removeButton.addEventListener("click", () => {
-		if (ingredients[i][j].quantity > 0) {
-		    ingredients[i][j].quantity--;
+		if (ingredients[j].quantity > 0) {
+		    ingredients[j].quantity--;
+		    updateLabel(label, ingredients[j].name, ingredients[j].quantity);
+		    
+		    // Color the row
+		    if (initialQuantities[j] < ingredients[j].quantity) {
+		        row.classList.remove('red_row');
+		        row.classList.add('green_row');
+			}
+		    else if (initialQuantities[j] > ingredients[j].quantity) {
+		       row.classList.remove('green_row');
+		        row.classList.add('red_row');
+		    }
+		    else {
+		        row.classList.remove('green_row', 'red_row');
+		    }
 		}
-		updateLabel(label, ingredients[i][j].name, ingredients[i][j].quantity);
 	    });
 	    
 	    // Attach everything
@@ -117,32 +142,44 @@ try
 	    row.appendChild(addCell);
 	    row.appendChild(labelCell);
 	    table.appendChild(row);
+	    
+	    // Hide rows if they don't match table categories
+	    let isVisible = false;
+	    for (const tableCategory of tableCategories) {
+		if (tableCategory === ingredients[j].category) {
+		    isVisible = true;
+		}
+	    }
+	    if (isVisible === false) {
+		row.style.display = "none";
+	    }
 	}
     }
 
-    // Assign behavior to save buttons
+    // Assign behavior to "Save" button
     // This type of button processing is called AJAX (Async JS And XML)
-    // Because occurs in background, the page doesn't reload
+    // Because it occurs in background, the page doesn't reload and the URL doesn't change
     document.querySelectorAll('.save_button').forEach(button => // .querySelectorAll returns a NodeList object
     {
-	// Attach listener, async because Fetch returns a Promise, not immediate response, promise becomes result when awaited
+	// Attach listener, async because Fetch returns a Promise, not immediate response, promise becomes Result when awaited
 	button.addEventListener('click', async () =>
 	{
 	    // Locate HTML span associated with "Saved!" response text for later
-	    const statusSpan = button.nextElementSibling; // The span is always right after the button
+	    const statusSpan = button.nextElementSibling; // This span is always right after the button
 
-	    // Fetch API, used for all HTTP requests, send list as JSON to save-inventory.php
+	    // Fetch API, used for all HTTP requests - send list as JSON to save-inventory.php
 	    try {
 		const response = await fetch('save-inventory.php', // This php file executes while the user remains on the current page
 		{
 		    method: 'POST',
 		    headers: { 'Content-Type': 'application/json' }, // PHP receiving end will expect a JSON
-		    body: JSON.stringify(ingredients) // Convert assoc array into json
+		    body: JSON.stringify(ingredients) // Convert associtaive array into json
 		});
 		
 		// Receive response as JSON
 		const result = await response.json();
 	    
+		// Show a response text "Saved" for instant feedback, or an error
 		if (result.success) {
 		    statusSpan.textContent = 'Saved';
 		} else {
