@@ -46,7 +46,6 @@ table, tr, td {
 }
 
 .button_cell {
-  /*display: flex;*/
   align-items: stretch; /* Stretches items along the cross-axis (vertically by default) */
   justify-content: space-between; /* Example: distributes items along the main-axis */
 }
@@ -76,15 +75,17 @@ table td button {
     background-color: #151b23;
 }
 
+.green_row {
+    background-color: #2ea04326;
+}
+
+.red_row {
+    background-color: #f851491a;
+}
+
 table td p {
     margin: 0px;
 }
-
-/*
-table td button {
-  height: 100%;
-  box-sizing: border-box;
-}*/
 
 body {
     font-family: 'Space Mono', sans-serif;
@@ -102,5 +103,10 @@ b {
 
 a, a:visited {
     color: #4493f8;
+    text-decoration: none;
 }
 
+a:hover {
+    text-decoration: underline;
+    text-underline-offset: .2rem;
+}
