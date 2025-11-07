@@ -5,7 +5,8 @@
 // Receives JSON of inventory, updates qunatity values in ingredients table of the database
 // Returns a JSON with a boolean for sucess and failure, and forwards an error message if it occured
 
-$pdo = require_once 'db.php';
+require_once 'db.php';
+$pdo = getPDO();
 $success = true;
 $message = '';
 
