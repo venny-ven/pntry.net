@@ -15,16 +15,21 @@ table, tr, td {
 }
 
 .save_button {
-    background-color: #29903b;
-    color: #ffffff;
-    border: .0625rem solid;
-    border-color: #ffffff26;
     gap: .5rem;
     height: 2rem;
     justify-content: space-between;
     min-width: max-content;
     padding: 0 .75rem;
     text-align: center;
+
+    font-size: 15px;
+    border: 1px solid;
+    border-color: #3d444d;
+    background: #0d1117; /* Green color */
+    border-radius: 0px;
+    background-color: #29903b;
+    color: #ffffff;
+    border-color: #ffffff26;
 }
 
 .remove_button:hover {
@@ -33,6 +38,7 @@ table, tr, td {
 
 .add_button:hover {
     background: #2e9a40;
+
 }
 
 .button_cell {
@@ -56,6 +62,7 @@ table td button {
     text-align: center;
 /*  background-color: #fff0; /* Transparent buttons */
     background: #0d1117; /* Same as site color */
+    font-family: 'Times New Roman', sans-serif;  /* Using different font to make the signs bigger */
 }
 
 .label_cell {
@@ -82,9 +89,14 @@ table td p {
 }
 
 body {
-    font-family: 'Space Mono', sans-serif;
+    font-family: 'Space Mono', monospace;
     background: #0d1117;
     color: #9198a1;
+}
+
+/* Inherit font from body, doesn't happen automatically for some reason */
+button, input, select {
+    font-family: inherit; 
 }
 
 p {
@@ -104,3 +116,34 @@ a:hover {
     text-decoration: underline;
     text-underline-offset: .2rem;
 }
+
+/* ------------ Forms ------------ */
+
+input {
+    font-size: 15px;
+    border: 1px solid;
+    border-color: #3d444d;
+    background: #0d1117; /* Green color */
+    border-radius: 0px;
+    padding: 4px 8px;
+    background-color: #29903b;
+    color: #ffffff;
+    border-color: #ffffff26;
+}
+
+label input {
+    border-color: #3d444d;
+    background: #0d1117; /* Background color */
+    color: #ffffff;
+}
+
+select {
+    font-size: 15px;
+    border: 1px solid;
+    border-color: #3d444d;
+    color: #ffffff;
+    background-color: #0d1117; /* Background color */
+    padding: 4px 8px;
+    border-radius: 0px;
+}
+
