@@ -32,15 +32,6 @@ table, tr, td {
     border-color: #ffffff26;
 }
 
-.remove_button:hover {
-    background: #e42122;
-}
-
-.add_button:hover {
-    background: #2e9a40;
-
-}
-
 .button_cell {
   align-items: stretch; /* Stretches items along the cross-axis (vertically by default) */
   justify-content: space-between; /* Example: distributes items along the main-axis */
@@ -66,15 +57,31 @@ table td button {
 }
 
 .label_cell {
-    width: 100%;
-    margin: 0px;
+    width: 80%;
+    /*margin: 0px; /* Apparently no need */
+    border-right: none;
+
 }
 
-/* Color the table rows */
-
-.label_cell:hover {
-    background-color: #151b23;
+.shelf_life_cell {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: right;
+    border-left: none;
 }
+
+/* Tint and color when hovering table elements */
+tr:hover td {
+  background-color: #151b23;
+}
+.remove_button:hover {
+  background: #e42122;
+}
+.add_button:hover {
+  background: #2e9a40;
+}
+
+
 
 .green_row {
     background-color: #2ea04326;

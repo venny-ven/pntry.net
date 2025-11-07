@@ -18,9 +18,18 @@ $ingredients = json_decode($input, true);
 
 // Update DB
 try {
-    $stmt = $pdo->prepare("UPDATE ingredient SET quantity = :quantity WHERE id = :id");
-    foreach ($ingredients as $item) {
-	$stmt->execute(['quantity' => $item['quantity'], 'id' => $item['id']]);
+    // acquire_date only changes if the quantity used to be 0 but is no longer
+    // quantity and new_quantity are the same but must be separate variables because no repetition rule
+    $stmt = $pdo->prepare
+    ("
+	UPDATE ingredient
+	SET
+	    acquire_date = CASE WHEN quantity = 0 AND :new_quantity != 0 THEN NOW() ELSE acquire_date END,
+	    quantity = :quantity
+	WHERE id = :id
+    ");
+    foreach ($ingredients as $item) { 
+	$stmt->execute(['quantity' => $item['quantity'], 'new_quantity' => $item['quantity'], 'id' => $item['id']]);
     }
 } catch (PDOException $ex) {
     $success = false;

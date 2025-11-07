@@ -6,7 +6,7 @@ $pdo = getPDO();
 
 ?>
 
-<p>Add and remove items from the following list of available options to match what you have in the kitchen.</p>
+<p>Use this tool to keep track of items in your kitchen and to see what may expire soon</p>
 
 <!-- Save button at the top of the list with a hidden response label that appears when pressed -->
 <button class="save_button" type="button">Save</button> <!-- type='button' is default, 'submit' would do a form request -->
@@ -15,16 +15,16 @@ $pdo = getPDO();
 <!-- Table version of the ingredient list -->
 <div style="display: flex; gap: 8px; align-items: flex-start; padding-top: 8px; padding-bottom: 8px;">
 <table> <tbody id="table0" data-categories="protein,dairy">
-	<tr> <th colspan="3"> <p>Protein & Dairy</p> </th> </tr>
+	<tr> <th colspan="4"> <p>Protein & Dairy</p> </th> </tr>
 </tbody> </table>
 <table> <tbody id="table1" data-categories="starch">
-	<tr> <th colspan="3"> <p>Starch</p> </th> </tr>
+	<tr> <th colspan="4"> <p>Starch</p> </th> </tr>
  </tbody> </table>
 <table> <tbody id="table2" data-categories="fruit,vegetable">
-	<tr> <th colspan="3"> <p>Fruit & Vegetables</p> </th> </tr>
+	<tr> <th colspan="4"> <p>Fruit & Vegetables</p> </th> </tr>
 </tbody> </table>
 <table> <tbody id="table3" data-categories="seasoning">
-	<tr> <th colspan="3"> <p>Seasonings</p> </th> </tr>
+	<tr> <th colspan="4"> <p>Seasonings</p> </th> </tr>
 </tbody> </table>
 </div>
 
@@ -43,7 +43,7 @@ try
     // Make sure the column names selected have no identical names (avoid selecting both i.id and m.id), if they do, alias them
     $statement = $pdo->query
 	("
-	    SELECT i.id, i.name, i.quantity, i.category, m.unit
+	    SELECT i.id, i.name, i.quantity, i.category, i.shelf_life_days, i.acquire_date, i.shelf_life_days, m.unit
 	    FROM ingredient AS i
 	    JOIN measurement AS m
 	    ON i.measurement_id = m.id;
@@ -66,6 +66,30 @@ try
     // To determine the color of the row - green or red or none
     const initialQuantities = ingredients.map(ingr => ingr.quantity);
 
+    // Get datetime from the server
+    const serverTimestamp = "<?php echo date('Y-m-d H:i:s'); ?>";
+    const currentDatetime = new Date(serverTimestamp.replace(" ", "T")); // Converts into a working format
+    
+    function setRemainingDays(label, acquireDate, shelfLifeDays) {
+	if (shelfLifeDays === null) {
+	    return;
+	}
+	    
+	const acquireDatetime = new Date(acquireDate);
+	const expirationDatetime = new Date(acquireDatetime.getTime() + shelfLifeDays * 24 * 60 * 60 * 1000);
+	const remainingMs = expirationDatetime - currentDatetime;
+	const remainingDays = Math.floor(remainingMs / (24 * 60 * 60 * 1000));
+
+	if (remainingDays < 0) {
+	    // color ingredient text red
+	}
+	else if (remainingDays < 2) {
+	    // color ingredient text yellow
+	}
+	label.innerHTML = `${remainingDays} d`;
+    }
+    
+
     // This function runs every time a button is clicked and also once for each ingredient at initialization
     function updateLabel(label, ingredientName, quantity, measurementUnit)
     {
@@ -79,7 +103,7 @@ try
 	const table = document.getElementById(`table${i}`);
 	
 	// Identify selected categories for that table
-	const tableCategories = table.dataset.categories.split(',')
+	const tableCategories = table.dataset.categories.split(',');
 	
 	// Create entries in the table
 	for (let j = 0; j < ingredients.length; j++) {
@@ -89,13 +113,17 @@ try
 	    const removeCell = document.createElement("td");
 	    const addCell = document.createElement("td");
 	    const labelCell = document.createElement("td");
-		// Add classes for css control
-		removeCell.classList.add("button_cell");
-		addCell.classList.add("button_cell");
-		labelCell.classList.add("label_cell");
+		const label = document.createElement("p");
+	    const shelfLifeCell = document.createElement("td");
+		const shelfLifeLabel = document.createElement("p");
+
+	    // Add classes for css control
+	    removeCell.classList.add("button_cell");
+	    addCell.classList.add("button_cell");
+	    labelCell.classList.add("label_cell", "multicell");
+	    shelfLifeCell.classList.add("shelf_life_cell", "multicell");
 	    
 	    // Label - text that says the name of the ingredient and quantity
-	    const label = document.createElement("p");
 	    updateLabel(label, ingredients[j].name, ingredients[j].quantity, ingredients[j].unit);
 	    
 	    // "+" button
@@ -117,6 +145,11 @@ try
 		else {
 		    row.classList.remove('green_row', 'red_row');
 		}
+		
+		// Add expiration time if the item has just been added
+		if (ingredients[j].quantity === 1) {
+		    setRemainingDays(shelfLifeLabel, ingredients[j].acquire_date, ingredients[j].shelf_life_days);
+		}
 	    });
 	    
 	    // "-" button
@@ -134,22 +167,34 @@ try
 		        row.classList.add('green_row');
 			}
 		    else if (initialQuantities[j] > ingredients[j].quantity) {
-		       row.classList.remove('green_row');
+			row.classList.remove('green_row');
 		        row.classList.add('red_row');
 		    }
 		    else {
 		        row.classList.remove('green_row', 'red_row');
 		    }
+		    
+		    // Remove the expiration date when the item is removed
+		    if (ingredients[j].quantity === 0) {
+			shelfLifeLabel.innerHTML = ``;
+		    }
 		}
 	    });
+	    
+	    // Calculate remaining shelf life
+	    if (ingredients[j].quantity !== 0) {
+		setRemainingDays(shelfLifeLabel, ingredients[j].acquire_date, ingredients[j].shelf_life_days);
+	    }
 	    
 	    // Attach everything
 	    removeCell.appendChild(removeButton);
 	    addCell.appendChild(addButton);
 	    labelCell.appendChild(label);
+	    shelfLifeCell.appendChild(shelfLifeLabel);
 	    row.appendChild(removeCell);
 	    row.appendChild(addCell);
 	    row.appendChild(labelCell);
+	    row.appendChild(shelfLifeCell);
 	    table.appendChild(row);
 	    
 	    // Hide rows if they don't match table categories

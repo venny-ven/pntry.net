@@ -9,7 +9,7 @@ function getPDO() {
 	$user = 'www-data'; // Username associated with NginX and Apache process
 	$pass = '';  // No password since connecting via unix_socket
 	$charset = 'utf8mb4'; // Modern charset standard - UTF8 + patch, fast general sorting / comparison, case insensitive
-	$dbname = 'pntry_v4'; // Changes to internal structure should advance this version
+	$dbname = 'pntry_v6'; // Changes to internal structure should advance this version
 	$attributes = [
 	    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // DB fails will raise exceptions, not warnings, not ignored
 	    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // Items fetched as key->value, not key->value AND keyID->valueID - cleaner
@@ -59,6 +59,8 @@ function getPDO() {
 		    category VARCHAR(12) CHECK
 			(category IN ('protein', 'starch', 'vegetable', 'fruit', 'dairy', 'seasoning')),
 		    quantity INT NOT NULL DEFAULT 0,
+		    shelf_life_days INT,
+		    acquire_date DATETIME,		    
 		    measurement_id INT,
 	    
 		    FOREIGN KEY (measurement_id) REFERENCES measurement(id)

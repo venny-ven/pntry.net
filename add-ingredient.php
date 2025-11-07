@@ -11,19 +11,24 @@ include 'ingredient-form.php';
 
 // If vieweing after a form was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') { // === is strict equality (value AND type)
+
     // Prevent HTML tag injection
     $name = htmlspecialchars($_POST['name'] ?? '');
     $category = htmlspecialchars($_POST['category'] ?? '');
     $measurement = htmlspecialchars($_POST['measurement'] ?? '');
+    $shelf_life_days = htmlspecialchars($_POST['shelf_life_days'] ?? '');
+    if ($shelf_life_days == 0) { $shelf_life_days = null; }
+    
     
     try
     {
+	// Prepare-execute prevents SQL injection
 	$stmt = $pdo->prepare
 	("
-	    INSERT INTO ingredient (name, category, measurement_id)
-	    VALUES (:name, :category, :measurement)
+	    INSERT INTO ingredient (name, category, shelf_life_days, measurement_id)
+	    VALUES (:name, :category, :shelf_life_days, :measurement)
 	");
-	$stmt->execute(['name' => $name, 'category' => $category, 'measurement' => $measurement]);
+	$stmt->execute(['name' => $name, 'category' => $category, 'shelf_life_days' => $shelf_life_days, 'measurement' => $measurement]);
 	echo "<p>You have added a new ingredient <b>$name</b>";
     } catch (PDOException $ex)
     {
