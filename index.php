@@ -191,6 +191,14 @@ try
 		// Show a response text "Saved" for instant feedback, or an error
 		if (result.success) {
 		    statusSpan.textContent = 'Saved';
+		    
+		    // Remove row highlights
+		    document.querySelectorAll('.green_row').forEach(element => {
+			element.classList.remove('green_row');
+		    });
+		    document.querySelectorAll('.red_row').forEach(element => {
+			element.classList.remove('red_row');
+		    });
 		} else {
 		    statusSpan.textContent = `DB Error: ${result.message}`;
 		}
