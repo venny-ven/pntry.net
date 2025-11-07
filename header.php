@@ -10,4 +10,4 @@
     <h1><b>pntry</b>.net</h1>
     <a href="index.php">Home</a> |
     <a href="inventory.php">Manage inventory</a> |
-    <a href="add-ingredient.php">Add an ingredient to the database</a>
+    <a href="add-ingredient.php">Add a new ingredient</a>
