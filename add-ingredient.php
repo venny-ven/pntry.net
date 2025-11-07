@@ -1,9 +1,11 @@
 <?php
 
 include 'header.php';
-$pdo = require_once 'db.php';
+require_once 'db.php';
+$pdo = getPDO();
 
 echo '<p>Add an ingredient to the database so you can track its amount in the future.</p>';
+echo "<p>You can add a new unit of measurement using <a href='add-measurement.php'>this form</a>.</p>";
 
 include 'ingredient-form.php';
 
@@ -12,24 +14,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { // === is strict equality (value AN
     // Prevent HTML tag injection
     $name = htmlspecialchars($_POST['name'] ?? '');
     $category = htmlspecialchars($_POST['category'] ?? '');
+    $measurement = htmlspecialchars($_POST['measurement'] ?? '');
     
     try
     {
 	$stmt = $pdo->prepare
-		("
-		    INSERT INTO `ingredient` (`name`, `category`)
-		    VALUES (:name, :category)
-		");
-	$stmt->execute(['name' => $name, 'category' => $category]);
-	echo "<p>You have added a new ingredient <b>$name</b> under a category <b>$category</b></p>";
+	("
+	    INSERT INTO ingredient (name, category, measurement_id)
+	    VALUES (:name, :category, :measurement)
+	");
+	$stmt->execute(['name' => $name, 'category' => $category, 'measurement' => $measurement]);
+	echo "<p>You have added a new ingredient <b>$name</b>";
     } catch (PDOException $ex)
     {
 	// Check if the error code corresponds to a UNIQUE constraint violation
 	if ($ex->getCode() == 23000) {
-	    echo "<p>Error: Ingredient $name already exists!</p>";
+	    echo "<p>Error: Ingredient <b>$name</b> already exists!</p>";
 	} else {
 	    die("Failed to add the ingredient to the database: " . $ex->getMessage());
 	}
-    }    
+    }
 }
 include 'footer.php';

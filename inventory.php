@@ -1,7 +1,8 @@
 <?php
 
 include "header.php"; 
-$pdo = require_once 'db.php';
+require_once 'db.php';
+$pdo = getPDO();
 
 ?>
 
@@ -39,7 +40,15 @@ $pdo = require_once 'db.php';
 try
 {
     // Load ingredients into an associative array from the database
-    $statement = $pdo->query("SELECT id, name, quantity, category FROM ingredient");
+    // Make sure the column names selected have no identical names (avoid selecting both i.id and m.id), if they do, alias them
+    $statement = $pdo->query
+	("
+	    SELECT i.id, i.name, i.quantity, i.category, m.unit
+	    FROM ingredient AS i
+	    JOIN measurement AS m
+	    ON i.measurement_id = m.id;
+	");
+    
     $ingredientList = $statement->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $ex) {
     die("Could not retrieve ingredients from the database: " . $ex->getMessage());
@@ -58,9 +67,9 @@ try
     const initialQuantities = ingredients.map(ingr => ingr.quantity);
 
     // This function runs every time a button is clicked and also once for each ingredient at initialization
-    function updateLabel(label, ingredientName, quantity)
+    function updateLabel(label, ingredientName, quantity, measurementUnit)
     {
-        label.innerHTML = `<b>${ingredientName}</b> x ${quantity}`;
+        label.innerHTML = `<b>${ingredientName}</b> x ${quantity} ${measurementUnit}`;
     }
     
     // Generate table items
@@ -87,7 +96,7 @@ try
 	    
 	    // Label - text that says the name of the ingredient and quantity
 	    const label = document.createElement("p");
-	    updateLabel(label, ingredients[j].name, ingredients[j].quantity);
+	    updateLabel(label, ingredients[j].name, ingredients[j].quantity, ingredients[j].unit);
 	    
 	    // "+" button
 	    const addButton = document.createElement("button");
@@ -95,7 +104,7 @@ try
 	    addButton.textContent = "+";
 	    addButton.addEventListener("click", () => {
 		ingredients[j].quantity++;
-		updateLabel(label, ingredients[j].name, ingredients[j].quantity);
+		updateLabel(label, ingredients[j].name, ingredients[j].quantity, ingredients[j].unit);
 		// Color the row
 		if (initialQuantities[j] < ingredients[j].quantity) {
 		    row.classList.remove('red_row');
@@ -117,7 +126,7 @@ try
 	    removeButton.addEventListener("click", () => {
 		if (ingredients[j].quantity > 0) {
 		    ingredients[j].quantity--;
-		    updateLabel(label, ingredients[j].name, ingredients[j].quantity);
+		    updateLabel(label, ingredients[j].name, ingredients[j].quantity, ingredients[j].unit);
 		    
 		    // Color the row
 		    if (initialQuantities[j] < ingredients[j].quantity) {
