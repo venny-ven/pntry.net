@@ -8,6 +8,6 @@
 </head>
 <body>
     <h1><b>pntry</b>.net</h1>
-    <a href="inventory.php">Manage inventory</a> |
+    <a href="index.php">Manage inventory</a> |
     <a href="add-ingredient.php">Add a new ingredient</a> |
     <a href="about.php">About</a>
