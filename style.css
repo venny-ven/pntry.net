@@ -27,18 +27,8 @@ table, tr, td {
     text-align: center;
 }
 
-.remove_button {
-    /*background: #b62324;*/
-    background: #0d1117;
-}
-
 .remove_button:hover {
     background: #e42122;
-}
-
-.add_button {
-    /*background: #29903b;*/
-    background: #0d1117;
 }
 
 .add_button:hover {
@@ -64,12 +54,16 @@ table td button {
     justify-content: space-between;
     min-width: max-content;
     text-align: center;
+/*  background-color: #fff0; /* Transparent buttons */
+    background: #0d1117; /* Same as site color */
 }
 
 .label_cell {
     width: 100%;
     margin: 0px;
 }
+
+/* Color the table rows */
 
 .label_cell:hover {
     background-color: #151b23;
