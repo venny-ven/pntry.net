@@ -1,6 +1,7 @@
 <?php
 
 include 'header.php';
+
 require_once 'db.php';
 $pdo = getPDO();
 
@@ -15,29 +16,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { // === is strict equality (value AN
     // Prevent HTML tag injection
     $name = htmlspecialchars($_POST['name'] ?? '');
     $category = htmlspecialchars($_POST['category'] ?? '');
-    $measurement = htmlspecialchars($_POST['measurement'] ?? '');
-    $shelf_life_days = htmlspecialchars($_POST['shelf_life_days'] ?? '');
-    if ($shelf_life_days == 0) { $shelf_life_days = null; }
-    
-    
+    $measurement_unit_id = htmlspecialchars($_POST['measurement_unit_id'] ?? '');
+    $shelf_life = htmlspecialchars($_POST['shelf_life'] ?? '');
+    if ($shelf_life == 0) { $shelf_life = null; } // Leave comparison as == instead of ===, otherwise it fails to compare correctly
+
     try
     {
 	// Prepare-execute prevents SQL injection
 	$stmt = $pdo->prepare
 	("
-	    INSERT INTO ingredient (name, category, shelf_life_days, measurement_id)
-	    VALUES (:name, :category, :shelf_life_days, :measurement)
+	    INSERT INTO ingredient (name, category, shelf_life, measurement_unit_id)
+	    VALUES (:name, :category, :shelf_life, :measurement_unit_id)
 	");
-	$stmt->execute(['name' => $name, 'category' => $category, 'shelf_life_days' => $shelf_life_days, 'measurement' => $measurement]);
+	$stmt->execute(['name' => $name, 'category' => $category, 'shelf_life' => $shelf_life, 'measurement_unit_id' => $measurement_unit_id]);
 	echo "<p>You have added a new ingredient <b>$name</b>";
     } catch (PDOException $ex)
     {
-	// Check if the error code corresponds to a UNIQUE constraint violation
-	if ($ex->getCode() == 23000) {
+	// Check if the error code corresponds to a constraint violation
+	if ($ex->getCode() == 23000) { // Leave comparison as == instead of ===, otherwise it fails to compare correctly
 	    echo "<p>Error: Ingredient <b>$name</b> already exists!</p>";
 	} else {
 	    die("Failed to add the ingredient to the database: " . $ex->getMessage());
 	}
     }
 }
+
 include 'footer.php';

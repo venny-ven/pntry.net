@@ -5,8 +5,8 @@ $pdo = getPDO();
 try
 {
     // Load measurements into associative array
-    $stmt = $pdo->query("SELECT id, unit FROM measurement");
-    $measurements = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $pdo->query("SELECT id, name FROM measurement_unit");
+    $measurement_units = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $ex) {
     die("Could not retrieve units of measurement from the database: " . $ex->getMessage());
 }
@@ -18,12 +18,12 @@ try
     <label>Ingredient name: <input type="text" name="name" required></label>
     
     <!-- Unit of measurement -->
-    <select name="measurement" required>
+    <select name="measurement_unit_id" required>
 	<option value="">-- Select measurement --</option>
 	<!--PHP loop -->
         <?php
-	foreach ($measurements as $row) {
-	    echo "<option value='{$row['id']}'>" . htmlspecialchars($row['unit']) . "</option>";
+	foreach ($measurement_units as $row) {
+	    echo "<option value='{$row['id']}'>" . htmlspecialchars($row['name']) . "</option>";
 	}
 	?>
     </select>
@@ -31,19 +31,19 @@ try
     <!-- Category -->
     <select name="category" required>
         <option value="">-- Select category --</option>
-        <option value="protein">Protein</option>
-        <option value="starch">Starch</option>
-        <option value="vegetable">Vegetable</option>
-        <option value="fruit">Fruit</option>
+        <option value="protein">Proteins</option>
+        <option value="starch">Starches</option>
+        <option value="vegetable">Vegetables</option>
+        <option value="fruit">Fruits</option>
         <option value="dairy">Dairy</option>
-        <option value="seasoning">Seasoning</option>
+        <option value="seasoning">Seasonings</option>
     </select>
     
     <!-- Shelf life -->
     <br><br>
     <label>
 	Shelf life in days (leave at 0 for indefinite):
-	<input type="number" name="shelf_life_days" value="0" min="0" max="1460" required>
+	<input type="number" name="shelf_life" value="0" min="0" max="1460" required>
     </label>
     
     <!-- Submit button -->
