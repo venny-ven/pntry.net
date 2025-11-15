@@ -18,31 +18,57 @@ $session_id = getSessionId();
 
 <p>Use this tool to keep track of items in your kitchen and to see what may expire soon</p>
 
-<!-- Save button at the top of the list with a hidden response label that appears when pressed -->
-<button class="save_button" type="button">Save</button> <!-- type='button' is default, 'submit' would do a form request -->
-<span class="save_status" style="margin-left: 8px;"></span>
 
-<!-- Table version of the ingredient list -->
-<div style="display: flex; gap: 8px; align-items: flex-start; padding-top: 8px; padding-bottom: 8px;">
-<table> <tbody id="table0" data-categories="protein,dairy">
-	<tr> <th colspan="4"> <p>Protein & Dairy</p> </th> </tr>
-</tbody> </table>
-<table> <tbody id="table1" data-categories="starch">
-	<tr> <th colspan="4"> <p>Starch</p> </th> </tr>
- </tbody> </table>
-<table> <tbody id="table2" data-categories="fruit,vegetable">
-	<tr> <th colspan="4"> <p>Fruit & Vegetables</p> </th> </tr>
-</tbody> </table>
-<table> <tbody id="table3" data-categories="seasoning">
-	<tr> <th colspan="4"> <p>Seasonings</p> </th> </tr>
-</tbody> </table>
+<!-- Headers are separate to keep them from scrolling away -->
+<div class="header-grid">
+    <div class="pane">
+	<table><thead><tr><th><p>Protein & Dairy</p></th></tr></thead></table>
+    </div>
+    <div class="pane">
+	<table><thead><tr><th><p>Starch & Seasonings</p></th></tr></thead></table>
+    </div>
+    <div class="pane">
+	<table><thead><tr><th><p>Fruit & Vegetables</p></th></tr></thead></table>
+    </div>
 </div>
 
-<!-- List of ingredients populated by JS -->
-<div id="ingredientPanel" style="display: flex;"></div>
+<!-- Ingredient tables -->
+<div class="body-grid">
+    
+    <div class="pane"> <!-- Scrolling pane -->
+	<table>
+	    <colgroup> <!-- For width control with CSS -->
+		<col class="column-0"><col class="column-1"><col class="column-2"><col class="column-3"><col class="column-4">
+	    </colgroup>
+	    <tbody id="table-body-0" data-categories="protein,dairy">
+	    </tbody>
+	</table>
+    </div>
+    
+    <div class="pane">
+	<table>
+	    <colgroup>
+		<col class="column-0"><col class="column-1"><col class="column-2"><col class="column-3"><col class="column-4">
+	    </colgroup>
+	    <tbody id="table-body-1" data-categories="starch,seasoning">
+	    </tbody>
+	</table>
+    </div>
+    
+    <div class="pane">
+	<table>
+	    <colgroup>
+		<col class="column-0"><col class="column-1"><col class="column-2"><col class="column-3"><col class="column-4">
+	    </colgroup>
+	    <tbody id="table-body-2" data-categories="fruit,vegetable">
+	    </tbody>
+	</table>
+    </div>
 
-<!-- Same button at the bottom of the list -->
-<button class="save_button" type="button">Save</button>
+</div>
+
+<!-- Save button with a hidden response label that appears when pressed -->
+<button class="save_button" type="button">Save</button> <!-- type='button' is default, 'submit' would do a form request -->
 <span class="save_status" style="margin-left: 8px;"></span>
 
 
@@ -113,12 +139,10 @@ try
 	}
 	contentField.innerHTML = `${remainingDays} d`;
     }
-    
-
+        
     // Runs every time a button is clicked and also once for each ingredient at initialization
-    function setName(contentField, ingredientName, quantity, measurementUnitName)
-    {
-        contentField.innerHTML = `<b>${ingredientName}</b> x ${quantity} ${measurementUnitName}`;
+    function setQuantity(contentField, quantity, measurementUnitName) {
+	contentField.innerHTML = `${quantity} ${measurementUnitName}`;
     }
     
     // Colors the row green, red, or transparent depending on if the item is being added or substracted from the initial
@@ -157,10 +181,10 @@ try
 	const currentDatetime = new Date(serverTimestamp.replace(" ", "T")); // Converts into a working format
     
     // Loop between tables
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 3; i++) {
 	
 	// Locate the correct table
-	const table = document.getElementById(`table${i}`);
+	const table = document.getElementById(`table-body-${i}`);
 	
 	// Identify selected categories for that table
 	const tableCategories = table.dataset.categories.split(',');
@@ -173,10 +197,12 @@ try
 	    const row = document.createElement("tr");
 		const removeCell = document.createElement("td");
 		const addCell = document.createElement("td");
+		const quantityCell = document.createElement("td");
 		const nameCell = document.createElement("td");
 		const durationCell = document.createElement("td");
 		    const removeButton = document.createElement("button");
 		    const addButton = document.createElement("button");
+		    const quantityCellContent = document.createElement("p");
 		    const nameCellContent = document.createElement("p");
 		    const durationCellContent = document.createElement("p");
 
@@ -185,12 +211,14 @@ try
 	    removeButton.classList.add("remove_button");
 	    addCell.classList.add("button_cell");
 	    addButton.classList.add("add_button");
-	    nameCell.classList.add("label_cell", "multicell");
-	    durationCell.classList.add("shelf_life_cell", "multicell");
+	    quantityCell.classList.add("quantity_cell")
+	    nameCell.classList.add("label_cell");
+	    durationCell.classList.add("shelf_life_cell");
 	    
 	    // Fill in name, quantity and duration
-	    // Currently the name cell contains both name of the ingredient and quantity
-	    setName(nameCellContent, ingredients[j].ingr_name, ingredients[j].quantity, ingredients[j].unit_name);
+	    nameCellContent.innerHTML = `<b>${ingredients[j].ingr_name}</b>`;
+	    setQuantity(quantityCellContent, ingredients[j].quantity, ingredients[j].unit_name);
+	    
 	    if (ingredients[j].quantity !== 0) {
 		setDuration(durationCellContent, ingredients[j].acquire_date, ingredients[j].shelf_life);
 	    }
@@ -199,7 +227,7 @@ try
 	    addButton.textContent = "+";
 	    addButton.addEventListener("click", () => {		
 		ingredients[j].quantity++;
-		setName(nameCellContent, ingredients[j].ingr_name, ingredients[j].quantity, ingredients[j].unit_name);
+		setQuantity(quantityCellContent, ingredients[j].quantity, ingredients[j].unit_name);
 		setRowColor(row, initialQuantities[j], ingredients[j].quantity);
 		
 		// Add expiration time if the item has just been added
@@ -213,7 +241,7 @@ try
 	    removeButton.addEventListener("click", () => {
 		if (ingredients[j].quantity > 0) {
 		    ingredients[j].quantity--;
-		    setName(nameCellContent, ingredients[j].ingr_name, ingredients[j].quantity, ingredients[j].unit_name);
+		    setQunatity(quantityCellContent, ingredients[j].quantity, ingredients[j].unit_name);
 		    setRowColor(row, initialQuantities[j], ingredients[j].quantity);
 
 		    // Remove the expiration date when the item is removed
@@ -226,10 +254,12 @@ try
 	    // Attach everything
 		    removeCell.appendChild(removeButton);
 		    addCell.appendChild(addButton);
+		    quantityCell.appendChild(quantityCellContent);
 		    nameCell.appendChild(nameCellContent);
 		    durationCell.appendChild(durationCellContent);
 		row.appendChild(removeCell);
 		row.appendChild(addCell);
+		row.appendChild(quantityCell);
 		row.appendChild(nameCell);
 		row.appendChild(durationCell);
 	    table.appendChild(row);
