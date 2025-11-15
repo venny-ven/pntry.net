@@ -1,156 +1,192 @@
-table, tr, td {
-    border: 1px solid;
-    border-color: #3d444d;
-    border-collapse: collapse;
-    border-spacing: 0;
-    overflow: hidden;
-    width: 25%;
-    padding-left: 10px;
-    padding-right: 0px;
-}
-
-.button_cell {
-    padding: 0px;
-    width: 0%;
-}
-
-.save_button {
-    gap: .5rem;
-    height: 2rem;
-    justify-content: space-between;
-    min-width: max-content;
-    padding: 0 .75rem;
-    text-align: center;
-
-    font-size: 15px;
-    border: 1px solid;
-    border-color: #3d444d;
-    background: #0d1117; /* Green color */
-    border-radius: 0px;
-    background-color: #29903b;
-    color: #ffffff;
-    border-color: #ffffff26;
-}
-
-.button_cell {
-  align-items: stretch; /* Stretches items along the cross-axis (vertically by default) */
-  justify-content: space-between; /* Example: distributes items along the main-axis */
-}
-
-table td button {
-    display: inline-block;
-    padding-top: .7em;
-    padding-bottom: .7em;
-    padding-right: 8px;
-    padding-left: 8px;
+:root {
+    --border-color: #3d444d;
+    --background-color: #0d1117;
+    --normal-text-color: #9198a1;
+    --bold-text-color: #f0f6fc;
+    --link-color: #4493f8;
     
-    color: #ffffff;
-    border: .0625rem solid;
-    border-color: #ffffff26;
-    gap: .5rem;
-    justify-content: space-between;
-    min-width: max-content;
-    text-align: center;
-/*  background-color: #fff0; /* Transparent buttons */
-    background: #0d1117; /* Same as site color */
-    font-family: 'Times New Roman', sans-serif;  /* Using different font to make the signs bigger */
-}
-
-.label_cell {
-    width: 80%;
-    /*margin: 0px; /* Apparently no need */
-    border-right: none;
-
-}
-
-.shelf_life_cell {
-    padding-left: 10px;
-    padding-right: 10px;
-    text-align: right;
-    border-left: none;
-}
-
-/* Tint and color when hovering table elements */
-tr:hover td {
-  background-color: #151b23;
-}
-.remove_button:hover {
-  background: #e42122;
-}
-.add_button:hover {
-  background: #2e9a40;
+    --highlight-row-color: #151b23;
+    --green-row-color: #2ea04326;
+    --red-row-color: #f851491a;
+    
+    --green-color: #2e9a40;
+    --red-color: #e42122;
 }
 
 
 
-.green_row {
-    background-color: #2ea04326;
-}
+		/* ------------------ General ------------------ */
 
-.red_row {
-    background-color: #f851491a;
-}
 
-table td p {
-    margin: 0px;
-}
 
 body {
     font-family: 'Space Mono', monospace;
-    background: #0d1117;
-    color: #9198a1;
+    background: var(--background-color);
+    color: var(--normal-text-color);
+}
+
+/* Bold text */
+b { color: var(--bold-text-color); }
+
+/* Links */
+a, a:visited {
+    color: var(--link-color);
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+    text-underline-offset: .2rem; /* Ignore error */
 }
 
 /* Inherit font from body, doesn't happen automatically for some reason */
 button, input, select {
-    font-family: inherit; 
+    font-family: inherit;
 }
 
-p {
-    color: #9198a1;
-}
+/* Save button */
+.save_button {
+    padding: 4px 8px 6px 8px;
+    text-align: center;
 
-b {
-    color: #f0f6fc;
-}
-
-a, a:visited {
-    color: #4493f8;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-    text-underline-offset: .2rem;
-}
-
-/* ------------ Forms ------------ */
-
-input {
     font-size: 15px;
     border: 1px solid;
-    border-color: #3d444d;
-    background: #0d1117; /* Green color */
+    background: var(--green-color);
     border-radius: 0px;
-    padding: 4px 8px;
-    background-color: #29903b;
-    color: #ffffff;
-    border-color: #ffffff26;
+    color: var(--bold-text-color);
+    border-color: var(--bold-text-color);
 }
 
-label input {
-    border-color: #3d444d;
-    background: #0d1117; /* Background color */
-    color: #ffffff;
+
+
+		/* ------------------ Table ------------------ */
+
+
+
+/* Dynamic colors */
+tr:hover td          { background-color: var(--highlight-row-color); }
+.remove_button:hover { background:                 var(--red-color); }
+.add_button:hover    { background:               var(--green-color); }
+.green_row           { background-color:     var(--green-row-color); }
+.red_row             { background-color:       var(--red-row-color); }
+
+
+/* Container for 3 panes that themselves contain headers. They are separate to keep them from scrolling away, but mimic the body tables in style */
+.header-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* Three equal panes */
+    gap: 8px; /* Gap between panes */
 }
 
-select {
+/* Container for 3 scrolling panes that themselves have tables with ingredient content */
+.body-grid {
+    display: grid;
+    height: 60vh; /* 60% of viewport height. because other elements are not based on viewport dimensions, things don't scale consistently */
+    grid-template-columns: 1fr 1fr 1fr; /* Three equal panes */
+    gap: 8px; /* Gap between panes */
+    padding-bottom: 10px;
+}
+
+/* Scrolling panes */
+.pane {
+    overflow-y: auto;   /* Scroll on y axis when too long */
+}
+
+/* Table widths */
+table{
+    table-layout: fixed; /* All cell sizes depend on the cell sizes of the first row */
+    width: 100%; /* Take full width of the pane */
+    box-sizing: border-box; /* Include border and padding as part of width / height sizings */
+}
+.column-0 { width: 26.9167px; }
+.column-1 { width: 26.9167px; }
+.column-2 { width:      6rem; }
+.column-3 { width:      auto; }
+.column-4 { width:      4rem; } /* Just enough for 'XXX d' */
+
+
+/* Borders */
+table, tr, th, td {
+    border: 1px solid;
+    border-color: var(--border-color);
+    border-collapse: collapse; /* Removes double bordering */
+}
+
+
+
+		/* ------------------ Table cells ------------------ */
+
+
+
+/* All cells */
+td {
+    /* Minimal height is constrained by the text element. Wrap in a div for precise control */
+    /*height: 0.5rem;*/
+    
+    white-space: nowrap; /* Prevent wrapping, new words are not visible */
+    overflow: hidden; /* Hide overflowing part instead of displaying it poking out of the element */
+    
+    /* Cells are padded by 1px at top and bottom - unnecessary */
+    padding: 0;
+}
+
+/* In-cell text */
+table tr td p {
+    margin: 0; /* Text comes with thick top and bottom margins - unnecessary */
+}
+
+/* Ingredient name cell */
+.label_cell {
+    padding-left: 0.5rem; /* Pad the text from the left edge of the cell */
+    
+    /* Remove borders, need to also remove them from the adjacent cells */
+    border-right: none;
+    border-left: none;
+}
+
+.quantity_cell {
+    padding-left: 0.5rem;
+    border-right: none;
+}
+
+/* Shelf life cell */
+.shelf_life_cell {
+    padding-right: 0.5rem;
+    text-align: right;
+    border-left: none;
+}
+
+/* Add & remove buttons */
+.add_button, .remove_button {
+    /* Padding increases the internal volume of the button */
+    padding: 6px 8px 8px 8px;
+    
+    color: var(--bold-text-color);
+    background: var(--background-color); /* Same as site color */
+    border: 0;
+    font-family: 'Verdana', sans-serif; /* Verdana offers bigger +- symbols */
+}
+
+
+
+		/* ------------------ Forms ------------------ */
+
+
+
+/* Text fields and drop downs */
+input, select {
     font-size: 15px;
     border: 1px solid;
-    border-color: #3d444d;
-    color: #ffffff;
-    background-color: #0d1117; /* Background color */
-    padding: 4px 8px;
+    border-color: var(--border-color);
+    color: var(--bold-text-color);
     border-radius: 0px;
+    padding: 4px 8px; /* Pad vertical and horizontal, to match the text */
+    background-color: var(--background-color);
+
 }
 
+/* Submit button */
+input:not(label input) {
+    background: var(--green-color);
+    border-color: var(--bold-text-color);
+    padding: 4px 8px 6px 8px;
+}
