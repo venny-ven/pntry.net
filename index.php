@@ -241,7 +241,7 @@ try
 	    removeButton.addEventListener("click", () => {
 		if (ingredients[j].quantity > 0) {
 		    ingredients[j].quantity--;
-		    setQunatity(quantityCellContent, ingredients[j].quantity, ingredients[j].unit_name);
+		    setQuantity(quantityCellContent, ingredients[j].quantity, ingredients[j].unit_name);
 		    setRowColor(row, initialQuantities[j], ingredients[j].quantity);
 
 		    // Remove the expiration date when the item is removed
