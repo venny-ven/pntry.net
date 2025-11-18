@@ -7,7 +7,9 @@
     
     --highlight-row-color: #151b23;
     --green-row-color: #2ea04326;
+    --green-row-highlight-color: #19362A;
     --red-row-color: #f851491a;
+    --red-row-highlight-color: #362329;
     
     --green-color: #2e9a40;
     --red-color: #e42122;
@@ -63,11 +65,13 @@ button, input, select {
 
 
 /* Dynamic colors */
-tr:hover td          { background-color: var(--highlight-row-color); }
-.remove_button:hover { background:                 var(--red-color); }
-.add_button:hover    { background:               var(--green-color); }
-.green_row           { background-color:     var(--green-row-color); }
-.red_row             { background-color:       var(--red-row-color); }
+tr:hover td          { background-color:       var(--highlight-row-color); }
+.remove_button:hover { background:                       var(--red-color); }
+.add_button:hover    { background:                     var(--green-color); }
+.green_row           { background-color:           var(--green-row-color); }
+.green_row:hover td  { background-color: var(--green-row-highlight-color); }
+.red_row             { background-color:             var(--red-row-color); }
+.red_row:hover td    { background-color:   var(--red-row-highlight-color); }
 
 
 /* Container for 3 panes that themselves contain headers. They are separate to keep them from scrolling away, but mimic the body tables in style */
