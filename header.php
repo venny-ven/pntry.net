@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8"> <!-- Use modern character set -->
     <title>pntry.net</title>
+    <link rel="icon" type="image/x-icon" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 </head>
