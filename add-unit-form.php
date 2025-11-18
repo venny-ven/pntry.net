@@ -1,4 +1,4 @@
-<form action="add-measurement.php" method="POST">
+<form action="add-unit.php" method="POST">
     <label>Unit of Measurement: <input type="text" name="name"></label>
     <br><br>
     <input type="submit" value="Add">

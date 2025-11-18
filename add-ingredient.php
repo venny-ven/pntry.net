@@ -7,9 +7,9 @@ $pdo = getPDO();
 
 echo '<p>Add an ingredient to the database so you can track its amount in the future.</p>';
 echo "<p>To remove an ingredient from the database use the <a href='remove-ingredient.php'>remove ingredient form</a>.</p>";
-echo "<p>You can add a new unit of measurement using the <a href='add-measurement.php'>add unit form</a> or remove one with the <a href='remove-unit.php'>remove unit form</a>.</p>";
+echo "<p>You can add a new unit of measurement using the <a href='add-unit.php'>add unit form</a> or remove one with the <a href='remove-unit.php'>remove unit form</a>.</p>";
 
-include 'ingredient-form.php';
+include 'add-ingredient-form.php';
 
 // If vieweing after a form was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') { // === is strict equality (value AND type)
