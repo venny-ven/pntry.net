@@ -141,13 +141,25 @@ try
     }
         
     // Runs every time a button is clicked and also once for each ingredient at initialization
-    function setQuantity(contentField, quantity, measurementUnitName) {
-	contentField.innerHTML = `${quantity} ${measurementUnitName}`;
+    function setQuantity(quantityContentField, nameContentField, quantity, measurementUnitName) {
+	quantityContentField.innerHTML = `${quantity} ${measurementUnitName}`;
+	
+	// Make bold
+	if (quantity === 1) {
+	    console.log("pass");
+	    nameContentField.innerHTML = "<b>" + nameContentField.textContent + "</b>";
+	}
+	// Unbold
+	else if (quantity === 0) {
+	    // Replace the element <b> with the content of the element, thus removing the bold effect
+	    if (nameContentField.querySelector('b')) {
+		nameContentField.innerHTML = nameContentField.querySelector('b').textContent;
+	    }
+	}
     }
     
     // Colors the row green, red, or transparent depending on if the item is being added or substracted from the initial
     function setRowColor(row, initailQuantity, currentQuantity) {
-		    console.log(`${initailQuantity}, ${currentQuantity}`);
 	if (initailQuantity < currentQuantity) {
 	    row.classList.remove('red_row');
 	    row.classList.add('green_row');
@@ -211,13 +223,13 @@ try
 	    removeButton.classList.add("remove_button");
 	    addCell.classList.add("button_cell");
 	    addButton.classList.add("add_button");
-	    quantityCell.classList.add("quantity_cell")
+	    quantityCell.classList.add("quantity_cell");
 	    nameCell.classList.add("label_cell");
 	    durationCell.classList.add("shelf_life_cell");
 	    
 	    // Fill in name, quantity and duration
 	    nameCellContent.innerHTML = `<b>${ingredients[j].ingr_name}</b>`;
-	    setQuantity(quantityCellContent, ingredients[j].quantity, ingredients[j].unit_name);
+	    setQuantity(quantityCellContent, nameCellContent, ingredients[j].quantity, ingredients[j].unit_name);
 	    
 	    if (ingredients[j].quantity !== 0) {
 		setDuration(durationCellContent, ingredients[j].acquire_date, ingredients[j].shelf_life);
@@ -227,7 +239,7 @@ try
 	    addButton.textContent = "+";
 	    addButton.addEventListener("click", () => {		
 		ingredients[j].quantity++;
-		setQuantity(quantityCellContent, ingredients[j].quantity, ingredients[j].unit_name);
+		setQuantity(quantityCellContent, nameCellContent, ingredients[j].quantity, ingredients[j].unit_name);
 		setRowColor(row, initialQuantities[j], ingredients[j].quantity);
 		
 		// Add expiration time if the item has just been added
@@ -241,7 +253,7 @@ try
 	    removeButton.addEventListener("click", () => {
 		if (ingredients[j].quantity > 0) {
 		    ingredients[j].quantity--;
-		    setQuantity(quantityCellContent, ingredients[j].quantity, ingredients[j].unit_name);
+		    setQuantity(quantityCellContent, nameCellContent, ingredients[j].quantity, ingredients[j].unit_name);
 		    setRowColor(row, initialQuantities[j], ingredients[j].quantity);
 
 		    // Remove the expiration date when the item is removed
