@@ -190,3 +190,7 @@ input:not(label input) {
     border-color: var(--bold-text-color);
     padding: 4px 8px 6px 8px;
 }
+
+.red-button {
+    background: var(--red-color);
+}
