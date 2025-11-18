@@ -48,5 +48,5 @@ try
     
     <!-- Submit button -->
     <br><br>
-    <input type="submit" value="Add Ingredient">
+    <input type="submit" value="Add">
 </form>
