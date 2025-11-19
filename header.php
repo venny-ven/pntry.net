@@ -8,7 +8,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1><b>pntry</b>.net</h1>
+    
+    <div class="title-row">
+	<h1 class="title"><b>pntry</b>.net</h1>
+	<div class="speech-message">
+	    <div class="speech-bubble">
+		<div class="speech-box">hi! ^^ welcome to my site</div>
+	    </div>
+	</div>
+	<img class="pfp" src="pfp.png">
+    </div>
+    
     <a href="index.php">Manage inventory</a> |
     <a href="add-ingredient.php">Add a new ingredient</a> |
     <a href="about.php">About this site</a>
