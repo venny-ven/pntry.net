@@ -215,6 +215,7 @@ input:not(label input) {
 
 .title {
     margin-right: auto;   /* pushes bubble + image to the right */
+    margin-top: 10px;
 }
   
 /* Speech bubble wrapper (keeps triangle aligned) */
