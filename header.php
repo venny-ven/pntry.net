@@ -21,4 +21,5 @@
     
     <a href="index.php">Manage inventory</a> |
     <a href="add-ingredient.php">Add a new ingredient</a> |
+    <a href="add-recipe.php">Add a new recipe</a> |
     <a href="about.php">About this site</a>

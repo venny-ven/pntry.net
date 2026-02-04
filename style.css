@@ -60,28 +60,28 @@ button, input, select {
 
 
 
-		/* ------------------ Table ------------------ */
+		/* ------------------ Tables ------------------ */
 
 
 
 /* Dynamic colors */
 tr:hover td          { background-color:       var(--highlight-row-color); }
-.remove_button:hover { background:                       var(--red-color); }
 .add_button:hover    { background:                     var(--green-color); }
+.remove_button:hover { background:                       var(--red-color); }
 .green_row           { background-color:           var(--green-row-color); }
 .green_row:hover td  { background-color: var(--green-row-highlight-color); }
 .red_row             { background-color:             var(--red-row-color); }
-.red_row:hover td    { background-color:   var(--red-row-highlight-color); }
+.red_row:hover td    { background-color:   var(--red-row-highlight-color); }		
+		
 
-
-/* Container for 3 panes that themselves contain headers. They are separate to keep them from scrolling away, but mimic the body tables in style */
+/* Container for 3 fixed panes that themselves contain headers. They are separate to keep them from scrolling away, but mimic the body tables in style */
 .header-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr; /* Three equal panes */
     gap: 8px; /* Gap between panes */
 }
 
-/* Container for 3 scrolling panes that themselves have tables with ingredient content */
+/* Container for 3 scrolling panes that contain ingredients */
 .body-grid {
     display: grid;
     height: 60vh; /* 60% of viewport height. because other elements are not based on viewport dimensions, things don't scale consistently */
@@ -90,23 +90,44 @@ tr:hover td          { background-color:       var(--highlight-row-color); }
     padding-bottom: 10px;
 }
 
+
+
+/* New Recipe Tables */
+	/* Same as above but for recipe adding page, 2 tables this time */
+	.recipe-header-grid {
+	    display: grid;
+	    grid-template-columns: 1fr 1fr ; /* Two equal panes */
+	    gap: 8px; /* Gap between panes */
+	}
+
+	.recipe-body-grid {
+	    display: grid;
+	    height: 60vh; /* 60% of viewport height. because other elements are not based on viewport dimensions, things don't scale consistently */
+	    grid-template-columns: 1fr 1fr; /* Two equal panes */
+	    gap: 8px; /* Gap between panes */
+	    padding-bottom: 10px;
+	}
+
 /* Scrolling panes */
 .pane {
     overflow-y: auto;   /* Scroll on y axis when too long */
 }
 
 /* Table widths */
-table{
+table {
     table-layout: fixed; /* All cell sizes depend on the cell sizes of the first row */
     width: 100%; /* Take full width of the pane */
     box-sizing: border-box; /* Include border and padding as part of width / height sizings */
 }
+
 .column-0 { width: 26.9167px; }
 .column-1 { width: 26.9167px; }
 .column-2 { width:      6rem; }
 .column-3 { width:      auto; }
 .column-4 { width:      4rem; } /* Just enough for 'XXX d' */
 
+.recipe-column-0 { width:      auto; }
+.recipe-column-1 { width: 26.9167px; }
 
 /* Borders */
 table, tr, th, td {
@@ -170,6 +191,32 @@ table tr td p {
     font-family: 'Verdana', sans-serif; /* Verdana offers bigger +- symbols */
 }
 
+/* Editable header */
+.editable-header p {
+    color: var(--link-color);
+}
+.editable-header p:hover {
+    text-decoration: underline;
+    text-underline-offset: .2rem; /* Ignore error */
+}
+th input {
+    /* Match properties of p */
+    /* Margins of p are 16 up and down, these are less to account for thickness of the input border */
+    margin-top: 15.25px;
+    margin-bottom: 15.25px;
+    padding: 0px;
+    text-align: center;
+    
+    box-sizing: border-box;
+    font: inherit;
+    outline: none;
+}
+
+/* Recipe rows need to match in height with other rows (they have no buttons that define height) */
+.recipe_table_row {
+    height: 30.2px;
+}
+
 
 
 		/* ------------------ Forms ------------------ */
@@ -189,7 +236,7 @@ input, select {
 }
 
 /* Submit button */
-input:not(label input) {
+.submit_input {
     background: var(--green-color);
     border-color: var(--bold-text-color);
     padding: 4px 8px 6px 8px;
