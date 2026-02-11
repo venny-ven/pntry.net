@@ -5,18 +5,19 @@ include "header.php";
 require_once 'db.php';
 $pdo = getPDO();
 
-require_once 'session.php';
-$session_id = getSessionId();
-
 ?>
 
 <p>Add a new recipe using this form</p>
 
 
-<!-- Headers are separate to keep them from scrolling away -->
-<div class="recipe-header-grid">
+<!-- Structure is
+     - One board for header, one board for body, board spans full width, separate to prevent top from scrolling
+     - Two or three panes inside each board, panes needed for scroll
+     - Table inside each pane
+-->
+<div class="board top-board two-pane-board">
     <div class="pane">
-	<table><thead><tr><th><p>Inventory</p></th></tr></thead></table>
+	<table><thead><tr><th><p>Ingredients</p></th></tr></thead></table>
     </div>
     <div class="pane">
 	<table><thead><tr><th class="editable-header"><p>New Recipe</p></th></tr></thead></table>
@@ -24,13 +25,13 @@ $session_id = getSessionId();
 </div>
 
 <!-- Ingredient tables -->
-<div class="recipe-body-grid">
+<div class="board bottom-board two-pane-board">
     
     <div class="pane"> <!-- Scrolling pane -->
 	<table>
 	    <colgroup> <!-- For width control with CSS -->
-		<col class="recipe-column-0">
-		<col class="recipe-column-1">
+		<col class="ingredient-name-column">
+		<col class="button-column">
 	    </colgroup>
 	    <tbody id="inventory-table">
 	    </tbody>
@@ -40,13 +41,19 @@ $session_id = getSessionId();
     <div class="pane">
 	<table>
 	    <colgroup>
-		<col class="recipe-column-1">
+		<col class="ingredient-name-column">
 	    </colgroup>
 	    <tbody id="recipe-table">
 	    </tbody>
 	</table>
     </div>
+    
+</div>
 
+<!-- Save button with a hidden response label that appears if an error occurs -->
+<div style="text-align: right;">
+    <span class="save_status" style="margin-right: 8px;"></span>
+    <button class="save_button" type="button">Save</button> <!-- type='button' is default, 'submit' would do a form request -->
 </div>
 
 
@@ -59,8 +66,7 @@ $session_id = getSessionId();
 <?php
 try
 {
-    // Load all ingredients and user quantities into an associative array from the database
-    // Make sure the column names selected have no identical names (dont select both i.id and m.id), if they do, alias them
+    // Load all ingredients into an associative array from the database
     $stmt = $pdo->prepare
     ("
 	SELECT
@@ -77,23 +83,24 @@ try
 ?>
 
 <script>
+	// Import inventopry from php to js, encode to json to sanitize
+	const inventory_ingredients = <?php echo json_encode($ingredients); ?>;
+	// Prepare internal list to send to server later
+	const recipe_ingredients = [];
+	
+	
+	
+	// ------- Inventory table -------
     
     
     
-    // ------- Fill rows with data -------
-    
-    
-    
-    // Prepare important variables before the loop
-	// Import glossary and inventopry from php to js, encode to json to sanitize
-	const ingredients = <?php echo json_encode($ingredients); ?>;
 	
 	// Locate the first table
 	const inventoryTable = document.getElementById(`inventory-table`);
 	
 	// Loop between inredient items
 	// Each table contains a full list of ingredients and then a lot of them are hidden based on the filters applied to the table
-	for (let j = 0; j < ingredients.length; j++) {
+	for (let j = 0; j < inventory_ingredients.length; j++) {
 	    
 	    // Table containers, like rows and cells
 	    const row = document.createElement("tr");
@@ -108,15 +115,17 @@ try
 	    nameCell.classList.add("label_cell");
 	    
 	    // Fill in name and id
-	    nameCellContent.innerHTML = `<b>${ingredients[j].name}</b>`;
+	    nameCellContent.innerHTML = `<b>${inventory_ingredients[j].name}</b>`;
 	    
 	    // Button
 	    addAndRemoveButton.textContent = "+";
 	    addAndRemoveButton.addEventListener("click", () => {
 		if (addAndRemoveButton.textContent === "+")
 		{
+		    recipe_ingredients[j] = inventory_ingredients[j]; // Creates a sparse array that contains missing indexes
+		    
 		    // Locate same ingredient row in the second table
-		    const recipeRow = document.getElementById(`ingredient-${ingredients[j].id}`);
+		    const recipeRow = document.getElementById(`ingredient-${inventory_ingredients[j].id}`);
 		    recipeRow.style.display = ""; // Shows the row
 		    
 		    addAndRemoveButton.textContent = "−";
@@ -126,7 +135,10 @@ try
 		    addAndRemoveButton.classList.add("remove_button");
 		} else 
 		{
-		    const recipeRow = document.getElementById(`ingredient-${ingredients[j].id}`);
+		    delete recipe_ingredients[j];
+		    
+		    // Locate same ingredient row in the second table
+		    const recipeRow = document.getElementById(`ingredient-${inventory_ingredients[j].id}`);
 		    recipeRow.style.display = "none"; // Hide the row
 		    
 		    addAndRemoveButton.textContent = "+";
@@ -144,12 +156,17 @@ try
 	}
 	
 	
+	
+	// ------- Recipe table -------
+	
+	
+	
 	// Locate the second table
 	const recipeTable = document.getElementById(`recipe-table`);
 	
 	// Loop between inredient items
 	// Each table contains a full list of ingredients and then a lot of them are hidden based on the filters applied to the table
-	for (let j = 0; j < ingredients.length; j++) {
+	for (let j = 0; j < inventory_ingredients.length; j++) {
 	    
 	    // Table containers, like rows and cells
 	    const row = document.createElement("tr");
@@ -158,11 +175,11 @@ try
 
 	    // Add classes for css control
 	    nameCell.classList.add("label_cell");
-	    row.classList.add("recipe_table_row");
-	    row.id = `ingredient-${ingredients[j].id}`; // Used to locate them later
+	    row.classList.add("fixed_height_row");
+	    row.id = `ingredient-${inventory_ingredients[j].id}`; // Used to locate them later
 	    
 	    // Fill in name and id
-	    nameCellContent.innerHTML = `<b>${ingredients[j].name}</b>`;
+	    nameCellContent.innerHTML = `<b>${inventory_ingredients[j].name}</b>`;
 	    
 	    // Attach everything
 		    nameCell.appendChild(nameCellContent);
@@ -179,32 +196,79 @@ try
     
     
     
-    // Select first item in array of elements of class editable header
-    const th = document.querySelector(".editable-header");
-    if (!th) console.error("No element with class 'editable-header' found.");
+    // Select first element of class editable header then select first paragraph
+    const header = document.querySelector(".editable-header").querySelector("p");
+    if (!header) console.error("No paragraph element in 'editable-header' found.");
 
-    th.addEventListener("click", () => {
-	const p = th.querySelector("p"); // Find paragraph element inside table header
-	if (!p) return; // If user is editing already then there's no paragraph element
+    header.addEventListener("click", () => {
+	const inputField = document.createElement("input");
+	inputField.type = "text"; // Other types include date or number
+	inputField.value = header.textContent;
 
-	const input = document.createElement("input");
-	input.type = "text"; // Other types include date or number
-	input.value = p.textContent;
-
-	th.replaceChild(input, p);
-	input.focus();
+	header.replaceWith(inputField);
+	inputField.focus();
+	inputField.select();  // Select all text
 
 	// Define a function inside the listener
-	function save() {
-	  const newP = document.createElement("p");
-	  newP.textContent = input.value || "New Recipe";
-	  th.replaceChild(newP, input);
+	function save()
+	{
+	    header.textContent = inputField.value;
+	    console.log(`inputField.value: ${inputField.value}. newHeader.textContent: ${header.textContent}`)
+	    inputField.replaceWith(header);
 	}
 
 	// 'Blur' is opposite of focused. When element is unfocused it's blurred
-	input.addEventListener("blur", save); // 'save' function is not called here, only registered. Tying save() would call it
-	input.addEventListener("keydown", e => {
-	  if (e.key === "Enter" || e.key === "Escape") input.blur();
+	inputField.addEventListener("blur", save); // 'save' function is not called here, only registered. Tying save() would call it
+	inputField.addEventListener("keydown", e => {
+	  if (e.key === "Enter" || e.key === "Escape") inputField.blur();
+	});
+    });
+    
+    
+    
+    // ------- 'Save' button ------- 
+
+
+
+    // This type of button processing is called AJAX (Async JS And XML)
+    // Because it occurs in background, the page doesn't reload and the URL doesn't change
+    document.querySelectorAll('.save_button').forEach(button => // .querySelectorAll returns a NodeList object
+    {
+	// Attach listener, async because Fetch returns a Promise, not immediate response, promise becomes Result when awaited
+	button.addEventListener('click', async () =>
+	{	    
+	    // Define data to be sent
+	    const recipe = {
+		name: header.textContent,
+		ingredients: recipe_ingredients.filter(Boolean) // Remove missing gaps in a sparse array
+	    };
+	    
+	    
+	    
+	    // Locate HTML span associated with feedback text for later
+	    const statusSpan = document.querySelector('.save_status');
+	    
+	    // Fetch API, used for all HTTP requests - send list as JSON to save-inventory.php
+	    try {
+		const response = await fetch('save-recipe.php', // This php file executes while the user remains on the current page
+		{
+		    method: 'POST',
+		    headers: { 'Content-Type': 'application/json' }, // PHP receiving end will expect a JSON
+		    body: JSON.stringify(recipe) // Convert into json
+		});
+		
+		// Receive response as JSON
+		const result = await response.json();
+	    
+		// Show a response text "Saved" for instant feedback, or an error
+		if (result.success) {
+		    window.location.href = "view-recipes.php";
+		} else {
+		    statusSpan.textContent = `DB Error: ${result.message}`;
+		}
+	    } catch (err) {
+		statusSpan.textContent = `PHP Error: ${err.message}`;
+	    }
 	});
     });
 

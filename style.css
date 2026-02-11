@@ -6,6 +6,7 @@
     --link-color: #4493f8;
     
     --highlight-row-color: #151b23;
+    --super-highlight-color: #1d2530;
     --green-row-color: #2ea04326;
     --green-row-highlight-color: #19362A;
     --red-row-color: #f851491a;
@@ -66,47 +67,33 @@ button, input, select {
 
 /* Dynamic colors */
 tr:hover td          { background-color:       var(--highlight-row-color); }
+.selected_row:hover td  { background-color:     var(--super-highlight-color); } /* to override the hover above */
+.selected_row        { background-color:     var(--super-highlight-color); }
 .add_button:hover    { background:                     var(--green-color); }
 .remove_button:hover { background:                       var(--red-color); }
 .green_row           { background-color:           var(--green-row-color); }
 .green_row:hover td  { background-color: var(--green-row-highlight-color); }
 .red_row             { background-color:             var(--red-row-color); }
 .red_row:hover td    { background-color:   var(--red-row-highlight-color); }		
-		
 
-/* Container for 3 fixed panes that themselves contain headers. They are separate to keep them from scrolling away, but mimic the body tables in style */
-.header-grid {
+.board {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* Three equal panes */
     gap: 8px; /* Gap between panes */
 }
 
-/* Container for 3 scrolling panes that contain ingredients */
-.body-grid {
-    display: grid;
+.bottom-board {
     height: 60vh; /* 60% of viewport height. because other elements are not based on viewport dimensions, things don't scale consistently */
-    grid-template-columns: 1fr 1fr 1fr; /* Three equal panes */
-    gap: 8px; /* Gap between panes */
     padding-bottom: 10px;
 }
 
+/* Container for 3 fixed panes that themselves contain headers. They are separate to keep them from scrolling away, but mimic the body tables in style */
+.three-pane-board {
+    grid-template-columns: 1fr 1fr 1fr; /* Three equal panes */
+}
 
-
-/* New Recipe Tables */
-	/* Same as above but for recipe adding page, 2 tables this time */
-	.recipe-header-grid {
-	    display: grid;
-	    grid-template-columns: 1fr 1fr ; /* Two equal panes */
-	    gap: 8px; /* Gap between panes */
-	}
-
-	.recipe-body-grid {
-	    display: grid;
-	    height: 60vh; /* 60% of viewport height. because other elements are not based on viewport dimensions, things don't scale consistently */
-	    grid-template-columns: 1fr 1fr; /* Two equal panes */
-	    gap: 8px; /* Gap between panes */
-	    padding-bottom: 10px;
-	}
+.two-pane-board {
+    grid-template-columns: 1fr 1fr; /* Three equal panes */
+}
 
 /* Scrolling panes */
 .pane {
@@ -120,14 +107,12 @@ table {
     box-sizing: border-box; /* Include border and padding as part of width / height sizings */
 }
 
-.column-0 { width: 26.9167px; }
-.column-1 { width: 26.9167px; }
-.column-2 { width:      6rem; }
-.column-3 { width:      auto; }
-.column-4 { width:      4rem; } /* Just enough for 'XXX d' */
-
-.recipe-column-0 { width:      auto; }
-.recipe-column-1 { width: 26.9167px; }
+.button-column           { width: 26.9167px; }
+.quantity-column         { width:      6rem; }
+.ingredient-name-column  { width:      auto; }
+.expiration-column       { width:      4rem; } /* Just enough for 'XXX d' */
+.recipe-name-column      { width:      auto; }
+.recipe-matchrate-column { width:      7rem; }
 
 /* Borders */
 table, tr, th, td {
@@ -213,7 +198,7 @@ th input {
 }
 
 /* Recipe rows need to match in height with other rows (they have no buttons that define height) */
-.recipe_table_row {
+.fixed_height_rows tr {
     height: 30.2px;
 }
 

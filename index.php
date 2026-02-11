@@ -19,8 +19,12 @@ $session_id = getSessionId();
 <p>Use this tool to keep track of items in your kitchen and to see what may expire soon</p>
 
 
-<!-- Headers are separate to keep them from scrolling away -->
-<div class="header-grid">
+<!-- Structure is
+     - One board for header, one board for body, board spans full width, separate to prevent top from scrolling
+     - Two or three panes inside each board, panes needed for scroll
+     - Table inside each pane
+-->
+<div class="board top-board three-pane-board">
     <div class="pane">
 	<table><thead><tr><th><p>Protein & Dairy</p></th></tr></thead></table>
     </div>
@@ -33,12 +37,16 @@ $session_id = getSessionId();
 </div>
 
 <!-- Ingredient tables -->
-<div class="body-grid">
+<div class="board bottom-board three-pane-board">
     
     <div class="pane"> <!-- Scrolling pane -->
 	<table>
 	    <colgroup> <!-- For width control with CSS -->
-		<col class="column-0"><col class="column-1"><col class="column-2"><col class="column-3"><col class="column-4">
+		<col class="button-column">
+		<col class="button-column">
+		<col class="quantity-column">
+		<col class="ingredient-name-column">
+		<col class="expiration-column">
 	    </colgroup>
 	    <tbody id="table-body-0" data-categories="protein,dairy">
 	    </tbody>
@@ -48,7 +56,11 @@ $session_id = getSessionId();
     <div class="pane">
 	<table>
 	    <colgroup>
-		<col class="column-0"><col class="column-1"><col class="column-2"><col class="column-3"><col class="column-4">
+		<col class="button-column">
+		<col class="button-column">
+		<col class="quantity-column">
+		<col class="ingredient-name-column">
+		<col class="expiration-column">
 	    </colgroup>
 	    <tbody id="table-body-1" data-categories="starch,seasoning">
 	    </tbody>
@@ -58,7 +70,11 @@ $session_id = getSessionId();
     <div class="pane">
 	<table>
 	    <colgroup>
-		<col class="column-0"><col class="column-1"><col class="column-2"><col class="column-3"><col class="column-4">
+		<col class="button-column">
+		<col class="button-column">
+		<col class="quantity-column">
+		<col class="ingredient-name-column">
+		<col class="expiration-column">
 	    </colgroup>
 	    <tbody id="table-body-2" data-categories="fruit,vegetable">
 	    </tbody>
