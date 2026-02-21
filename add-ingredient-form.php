@@ -29,14 +29,12 @@ try
     </select>
     
     <!-- Category -->
-    <select name="category" required>
+    <select name="table_id" required>
         <option value="">-- Select category --</option>
-        <option value="protein">Proteins</option>
-        <option value="starch">Starches</option>
-        <option value="vegetable">Vegetables</option>
-        <option value="fruit">Fruits</option>
-        <option value="dairy">Dairy</option>
-        <option value="seasoning">Seasonings</option>
+        <option value="1">Meat, Eggs, & Tofu</option>
+        <option value="2">Pasta, Rice, & Starchy Vegetables</option>
+        <option value="3">Fruits & Vegetables</option>
+        <option value="4">Dairy, Seasoning, & Baking</option>
     </select>
     
     <!-- Shelf life -->

@@ -76,6 +76,6 @@ function getSessionId(): int {
 
 	// lastInsertId() returns any auto-incremented value that occured on the last insert
 	$session_id = $pdo->lastInsertId();
-	return $session_id;
     }
+    return $session_id;
 }

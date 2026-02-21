@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { // === is strict equality (value AN
 
     // Prevent HTML tag injection
     $name = htmlspecialchars($_POST['name'] ?? '');
-    $category = htmlspecialchars($_POST['category'] ?? '');
+    $table_id = htmlspecialchars($_POST['table_id'] ?? '');
     $measurement_unit_id = htmlspecialchars($_POST['measurement_unit_id'] ?? '');
     $shelf_life = htmlspecialchars($_POST['shelf_life'] ?? '');
     if ($shelf_life == 0) { $shelf_life = null; } // Leave comparison as == instead of ===, otherwise it fails to compare correctly
@@ -26,10 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { // === is strict equality (value AN
 	// Prepare-execute prevents SQL injection
 	$stmt = $pdo->prepare
 	("
-	    INSERT INTO ingredient (name, category, shelf_life, measurement_unit_id)
-	    VALUES (:name, :category, :shelf_life, :measurement_unit_id)
+	    INSERT INTO ingredient (name, table_id, shelf_life, measurement_unit_id)
+	    VALUES (:name, :table_id, :shelf_life, :measurement_unit_id)
 	");
-	$stmt->execute(['name' => $name, 'category' => $category, 'shelf_life' => $shelf_life, 'measurement_unit_id' => $measurement_unit_id]);
+	$stmt->execute(['name' => $name, 'table_id' => $table_id, 'shelf_life' => $shelf_life, 'measurement_unit_id' => $measurement_unit_id]);
 	echo "<p>You have added a new ingredient <b>$name</b>";
     } catch (PDOException $ex)
     {

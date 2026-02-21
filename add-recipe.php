@@ -43,7 +43,7 @@ $pdo = getPDO();
 	    <colgroup>
 		<col class="ingredient-name-column">
 	    </colgroup>
-	    <tbody id="recipe-table">
+	    <tbody id="recipe-table" class="fixed_height_rows">
 	    </tbody>
 	</table>
     </div>
@@ -72,7 +72,7 @@ try
 	SELECT
 	    id,
 	    name,
-	    category
+	    table_id
 	FROM ingredient;
     ");
     $stmt->execute();
@@ -175,7 +175,6 @@ try
 
 	    // Add classes for css control
 	    nameCell.classList.add("label_cell");
-	    row.classList.add("fixed_height_row");
 	    row.id = `ingredient-${inventory_ingredients[j].id}`; // Used to locate them later
 	    
 	    // Fill in name and id
@@ -213,7 +212,6 @@ try
 	function save()
 	{
 	    header.textContent = inputField.value;
-	    console.log(`inputField.value: ${inputField.value}. newHeader.textContent: ${header.textContent}`)
 	    inputField.replaceWith(header);
 	}
 
